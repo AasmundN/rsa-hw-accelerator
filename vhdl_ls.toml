@@ -1,9 +1,5 @@
 [libraries]
 
-common.files = [
-  'vhdl/common/*.vhd'
-]
-
 uvvm_util.files = [
   'lib/uvvm/uvvm_util/*.vhd'
 ]
