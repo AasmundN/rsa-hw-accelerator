@@ -8,11 +8,20 @@ entity uvvm_tb is
 end entity uvvm_tb;
 
 architecture func of uvvm_tb is
-
+  constant log_file_name : string := "_uvvm_tb.log";
 begin
   p_main: process
   begin
-    log("Starting simulations.");
+    set_log_file_name(log_file_name);
+    
+
+    log("Starting simulation");
+
+    wait for 10 ns;
+
+    log("End of simulation");
+
+    report_alert_counters(void);
     
     std.env.stop;
     wait;
