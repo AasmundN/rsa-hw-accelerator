@@ -1,0 +1,6 @@
+DIR  := /build
+GUI  := yes
+MODE := work
+SIM  := ghdl
+SKIP :=
+V    := 0
