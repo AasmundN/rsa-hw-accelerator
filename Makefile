@@ -26,8 +26,10 @@ endif
 
 # absolute real path of TOP directory
 TOP := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
+
 # project name
 PROJECT := $(notdir $(TOP))
+
 # name of configuration file
 CONFIG := config
 
@@ -39,6 +41,7 @@ endif
 # compute configuration variables
 # simulator (ghdl, vsim or xsim)
 SIM ?= ghdl
+
 # GUI mode
 GUI ?= no
 ifneq ($(GUI),yes)
@@ -46,6 +49,7 @@ ifneq ($(GUI),no)
 $(error "$(GUI): invalid GUI value")
 endif
 endif
+
 GHDLAFLAGS ?= --std=08 -frelaxed -Wno-hide -Wno-shared
 GHDLRFLAGS ?= --std=08 -frelaxed -Wno-hide -Wno-shared
 GHDLRUNOPTS ?=
@@ -54,6 +58,7 @@ VSIMFLAGS ?=
 XVHDLFLAGS ?= -2008
 XELABFLAGS ?=
 XSIMFLAGS ?=
+
 ifeq ($(SIM),ghdl)
 COM = ghdl -a $(GHDLAFLAGS) --work=$(LIBNAME) $<
 ELAB := true
@@ -82,20 +87,25 @@ endif
 else
 $(error "$(SIM): invalid SIM value")
 endif
+
 # temporary build directory
 DIR ?= /tmp/$(USER)/$(PROJECT)/$(SIM)
+
 # tags sub-directory of DIR
 TAGS := .tags
+
 # compilation mode:
 # - "work":    the default target library is work,
 # - "dirname": the default target library is the one with same name as the
 #   directory of the source file
 MODE ?= work
+
 ifneq ($(MODE),work)
 ifneq ($(MODE),dirname)
 $(error invalid MODE value: $(MODE))
 endif
 endif
+
 # verbosity level: 0: quiet, 1: verbose
 V ?= 0
 ifeq ($(V),0)
@@ -140,6 +150,7 @@ Goals:
     units                   print existing UNITs not in SKIP
     all                     compile all source files not in SKIP
     UNIT.sim                simulate UNIT
+	UNIT.wave				view UNIT.ghw in gtkwave
     clean                   delete temporary build directory
 endef
 export HELP_message
@@ -288,12 +299,16 @@ else
 
 # search tag files in $(TAGS)
 VPATH := $(TAGS)
+
 # all source and dependency files
 SRCMKS := $(shell find -L $(TOP) -type f,l \( -name '*.vhd' -o -name '*.mk' \))
+
 # all source files
 SRCS := $(patsubst $(TOP)/%,%,$(filter %.vhd,$(SRCMKS)))
+
 # skip units listed in SKIP
 SRCS := $(filter-out $(addprefix %/,$(addsuffix .vhd,$(SKIP))),$(SRCS))
+
 # unit names (source file base names without .vhd extension)
 UNITS := $(patsubst %.vhd,%,$(notdir $(SRCS)))
 sorted_units := $(sort $(UNITS))
@@ -302,8 +317,10 @@ ifneq ($(duplicates),)
 $(error duplicated unit names: $(duplicates))
 endif
 UNITS := $(sorted_units)
+
 # simulation goals are UNIT.sim
 SIMULATIONS := $(addsuffix .sim,$(UNITS))
+
 # all dependency files under $(TOP)
 MKS := $(filter %.mk,$(SRCMKS))
 
@@ -327,6 +344,7 @@ $$($(1)-unit)-lib ?= work
 else
 $$($(1)-unit)-lib ?= $$(notdir $$(patsubst %/,%,$$(dir $(1))))
 endif
+
 $$($(1)-unit) $$($(1)-unit).sim: LIBNAME = $$($$($(1)-unit)-lib)
 $$($(1)-unit) $$($(1)-unit).sim: UNIT    = $$($(1)-unit)
 
@@ -346,6 +364,9 @@ $(foreach f,$(SRCS),$(eval $(call GEN_rule,$(f))))
 
 # library list without duplicates
 LIBS := $(sort $(LIBS))
+
+%.wave:
+	gtkwave $(TOP)$(DIR)/$*.ghw
 
 # list libraries
 libs:
