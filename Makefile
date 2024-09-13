@@ -140,6 +140,7 @@ Goals:
     units                   print existing UNITs not in SKIP
     all                     compile all source files not in SKIP
     UNIT.sim                simulate UNIT
+	UNIT.wave				view UNIT waveform in gtkwave
     clean                   delete temporary build directory
 endef
 export HELP_message
@@ -347,14 +348,11 @@ $(foreach f,$(SRCS),$(eval $(call GEN_rule,$(f))))
 # library list without duplicates
 LIBS := $(sort $(LIBS))
 
-<<<<<<< Updated upstream
-=======
 %.wave:
 	@printf '%s\n\n' "[WAVE] $*"
 	echo "Opening gtkwave..."
 	nohup gtkwave $(TOP)$(DIR)/$*.ghw &
 
->>>>>>> Stashed changes
 # list libraries
 libs:
 	@printf '%s\n' $(LIBS)
