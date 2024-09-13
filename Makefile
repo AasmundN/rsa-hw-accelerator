@@ -347,6 +347,14 @@ $(foreach f,$(SRCS),$(eval $(call GEN_rule,$(f))))
 # library list without duplicates
 LIBS := $(sort $(LIBS))
 
+<<<<<<< Updated upstream
+=======
+%.wave:
+	@printf '%s\n\n' "[WAVE] $*"
+	echo "Opening gtkwave..."
+	nohup gtkwave $(TOP)$(DIR)/$*.ghw &
+
+>>>>>>> Stashed changes
 # list libraries
 libs:
 	@printf '%s\n' $(LIBS)
