@@ -15,6 +15,9 @@ make all
 # run testbench uvvm_tb
 make uvvm_tb.sim
 
+# view uvvm_tb waveform in gtkwave
+make uvvm_tb.wave
+
 # display help
 make help
 ```
