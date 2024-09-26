@@ -348,6 +348,7 @@ $(foreach f,$(SRCS),$(eval $(call GEN_rule,$(f))))
 # library list without duplicates
 LIBS := $(sort $(LIBS))
 
+.PHONY: %.wave
 %.wave:
 	@printf '%s\n\n' "[WAVE] $*"
 	echo "Opening gtkwave..."
