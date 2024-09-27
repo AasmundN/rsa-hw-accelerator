@@ -1,6 +1,6 @@
-DIR  := build
-SRC  := src
-GUI  := yes
-MODE := dirname
-SIM  := ghdl
-V    := 0
+DIR   := build
+SRC   := src
+TESTS := tests
+GUI   := yes
+SIM   := ghdl
+V     := 0

@@ -37,8 +37,9 @@ $(error "$(GUI): invalid GUI value")
 endif
 endif
 
-# source file directory
+# source and test file directories
 SRC ?= src
+TESTS ?= tests
 
 GHDLAFLAGS ?= --std=08 -frelaxed --workdir=$(TOP)/$(DIR) -Wno-hide -Wno-shared
 GHDLRFLAGS ?= --std=08 -frelaxed --workdir=$(TOP)/$(DIR) -Wno-hide -Wno-shared
@@ -47,7 +48,7 @@ GHDLRUNOPTS ?=
 ifeq ($(SIM),ghdl)
     COM = @ghdl -a $(GHDLAFLAGS) --work=$(LIBNAME) $<
 	SYNT = ghdl --synth $(GHDLRFLAGS) --work=$(SRC) --out=none $(subst _tb, ,$(UNIT))
-	SCHEM = yosys -m ghdl -p \
+	SCHEMA = yosys -m ghdl -p \
 			"ghdl $(GHDLRFLAGS) --work=$(SRC) $(UNIT); show -format dot -prefix $(TOP)/$(DIR)/$(UNIT)"
 
     ifeq ($(GUI),yes)
@@ -88,6 +89,7 @@ Examples:
 Variable         valid values    description
     DIR          -               temporary build directory
     SRC          -               source file directory
+    TESTS        -               test file directory
     GHDLAFLAGS   -               GHDL analysis options
     GHDLRFLAGS   -               GHDL simulation options
     GHDLRUNOPTS  -               GHDL RUNOPTS options
@@ -104,7 +106,7 @@ Goals:
     all                          compile all source files not in SKIP
     UNIT.sim                     simulate UNIT, also rund synthesis test for DUT
     UNIT.wave                    view UNIT waveform using gtkwave
-    UNIT.schem                   generate and open preview of unit schematics
+    UNIT.schema                  generate and open preview of unit schematics
     clean                        delete temporary build directory
 endef
 export HELP_message
@@ -113,6 +115,7 @@ define CONFIG_values
 Variable           current value
     DIR            $(DIR)
     SRC            $(SRC)
+    TESTS          $(TESTS)
     GHDLAFLAGS     $(GHDLAFLAGS)
     GHDLRFLAGS     $(GHDLRFLAGS)
     GHDLRUNOPTS    $(GHDLRUNOPTS)
@@ -160,6 +163,9 @@ SRCS := $(patsubst $(TOP)/%,%,$(filter %.vhd,$(SRCMKS)))
 # skip units listed in SKIP
 SRCS := $(filter-out $(addprefix %/,$(addsuffix .vhd,$(SKIP))),$(SRCS))
 
+# source and test files
+PROJECT_FILES := $(filter-out lib/%, $(SRCS))
+
 # unit names (source file base names without .vhd extension)
 UNITS := $(patsubst %.vhd,%,$(notdir $(SRCS)))
 
@@ -179,7 +185,7 @@ SIMULATIONS := $(addsuffix .sim,$(UNITS))
 # all dependency files under $(TOP)
 MKS := $(filter %.mk,$(SRCMKS))
 
-.PHONY: units libs all $(addprefix .schem,$(UNITS)) $(addprefix .sim,$(UNITS)) $(addprefix .wave,$(UNITS))
+.PHONY: units libs all $(addprefix .schema,$(UNITS)) $(addprefix .sim,$(UNITS)) $(addprefix .wave,$(UNITS))
 
 # include dependency files
 include $(MKS)
@@ -213,9 +219,9 @@ $$($(1)-unit).sim: all
 	printf '[SIMULATE]        %-70s\n\n' "$$(LIBNAME).$$(UNIT)"
 	$$(RUN)
 
-$$($(1)-unit).schem: all
+$$($(1)-unit).schema: all
 	@printf '\n[SCHEMATIC]    %-70s\n' "$$(LIBNAME).$$(subst _tb, ,$$(UNIT))"
-	$$(SCHEM)
+	$$(SCHEMA)
 	dot -T svg -o $$(TOP)/$$(DIR)/$$(UNIT).svg $$(TOP)/$$(DIR)/$$(UNIT).dot
 	open $$(TOP)/$$(DIR)/$$(UNIT).svg
 
@@ -236,6 +242,10 @@ units:
 %.wave: 
 	@printf '\n[WAVE]    %-70s\n' "$(subst .wave,.ghw,$@)"
 	@gtkwave $(TOP)/$(DIR)/$(subst .wave,.ghw,$@)
+
+format:
+	$(foreach file,$(PROJECT_FILES),echo; vsg -c $(TOP)/vsg_config.json -f $(TOP)/$(file) --fix;)
+
 
 # compile all units
 all: $(UNITS)

@@ -1,11 +1,11 @@
 ## RSA Hardware Accelerator
 
-Hardware accelerator for RSA encryption and decryption written in VHDL.
+Hardware accelerator for RSA encryption and decryption written in VHDL. The _docs_ directory contains additional documentation, including high level code for the algorithm as implemented in hardware.
 
 
 ### Prerequisites
 
-This project uses the open source VHDL compiler [GHDL](https://github.com/ghdl/ghdl) for running simulations. Use [gtkwace](https://github.com/gtkwave/gtkwave) to view waveform files. [YOSYS](https://github.com/YosysHQ/yosys) in combination with [yosys-plugin-ghdl](https://github.com/ghdl/ghdl-yosys-plugin) is used for generating schematics. The output _.dot_ files are transformed to _.svg_ using [graphviz](https://gitlab.com/graphviz/graphviz).
+This project uses the open source VHDL compiler [GHDL](https://github.com/ghdl/ghdl) for running simulations. Use [gtkwave](https://github.com/gtkwave/gtkwave) to view waveform files. [YOSYS](https://github.com/YosysHQ/yosys) in combination with [yosys-plugin-ghdl](https://github.com/ghdl/ghdl-yosys-plugin) is used for generating schematics. The output _.dot_ files are transformed to _.svg_ using [graphviz](https://gitlab.com/graphviz/graphviz).
 
 Installation is easy as [oss-cad-suite](https://github.com/YosysHQ/oss-cad-suite-build) comes with prebuilt binaries for all of the mentioned tools, with the exception of _graphviz_ which must be installed separately. 
 
@@ -19,6 +19,8 @@ export GHDL_PREFIX="/usr/local/oss-cad-suite/lib/ghdl"
 export PATH="/usr/local/oss-cad-suite/bin:$PATH"
 
 ```
+
+To ensure consistent code styling the project uses [vhdl-style-guide](https://github.com/jeremiah-c-leary/vhdl-style-guide). This must also be installed separately. Styling config is provided in _vsg_config.json_.
 
 ### Running simulations
 
@@ -34,15 +36,21 @@ make uvvm_tb.sim
 # view uvvm_tb waveform in gtkwave
 make uvvm_tb.wave
 
+# generate and view schematics
+make UNIT.schema
+
+# format all source and test files
+make format
+
 # display help
 make help
 ```
 
-The _Makefile_ is a modified version of [pacalet/mkvhdl](https://github.com/pacalet/mkvhdl). See the github for detailed information on how to use it.
+The Makefile is a modified version of [pacalet/mkvhdl](https://github.com/pacalet/mkvhdl). See the github for detailed information on how to use it. The _config_ file contains configuration for make.
 
 ### Code editor setup
 
-For code completion and intellisense use the [VHDL-LS/rust_hdl](https://github.com/VHDL-LS/rust_hdl) language server. A configuration file _vhdl_ls.toml_ is provided.
+For code completion and intellisense use the [VHDL-LS/rust_hdl](https://github.com/VHDL-LS/rust_hdl) language server. A configuration file _vhdl_ls.toml_ is provided. See _vhdl-style-guide_ documention for instructions on setting up format on save.
 
 ### Dependencies
 

@@ -1,0 +1,10 @@
+{
+  "rule": {
+    "process_016": {
+      "disable": true
+    },
+    "process_018": {
+      "disable": true
+    }
+  }
+}
