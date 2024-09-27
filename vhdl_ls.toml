@@ -3,3 +3,12 @@
 uvvm_util.files = [
   'lib/uvvm/uvvm_util/*.vhd'
 ]
+uvvm_util.is_third_party = true
+
+src.files = [
+  "src/*.vhd",
+]
+
+tests.files = [
+  "tests/*.vhd",
+]
