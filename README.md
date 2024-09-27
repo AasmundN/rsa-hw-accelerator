@@ -25,7 +25,7 @@ To ensure consistent code styling the project uses [vhdl-style-guide](https://gi
 
 This project has been developed using GHDL version _5.0.0-dev_. Other versions might work but have not been tested. The provided _Makefile_ can then be used to compile the project, run simulations and view schematics. Note that synthesis using GHDL is an experimental feature and should only be used for simple testing.
 
-> NOTE: all testbenches must be name UNIT_tb, where UNIT is the DUT.
+> NOTE: all testbenches must be named UNIT_tb, where UNIT is the DUT.
 
 ```
 # compile all project sources
