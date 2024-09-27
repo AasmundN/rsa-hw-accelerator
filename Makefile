@@ -49,7 +49,7 @@ ifeq ($(SIM),ghdl)
     COM = @ghdl -a $(GHDLAFLAGS) --work=$(LIBNAME) $<
 	SYNT = ghdl --synth $(GHDLRFLAGS) --work=$(SRC) --out=none $(subst _tb, ,$(UNIT))
 	SCHEMA = yosys -m ghdl -p \
-			"ghdl $(GHDLRFLAGS) --work=$(SRC) $(UNIT); show -format dot -prefix $(TOP)/$(DIR)/$(UNIT)"
+			"ghdl $(GHDLRFLAGS) --work=$(SRC) $(UNIT); show -notitle -format dot -prefix $(TOP)/$(DIR)/$(UNIT)"
 
     ifeq ($(GUI),yes)
         RUN = ghdl -r $(GHDLRFLAGS) --work=$(LIBNAME) $(UNIT) $(GHDLRUNOPTS) --wave=$(UNIT).ghw; \
@@ -203,8 +203,8 @@ $(1)-unit := $$(patsubst %.vhd,%,$$(notdir $(1)))
 
 $$($(1)-unit)-lib ?= $$(notdir $$(patsubst %/,%,$$(dir $(1))))
 
-$$($(1)-unit) $$($(1)-unit).sim $$($(1)-unit).schem: LIBNAME = $$($$($(1)-unit)-lib)
-$$($(1)-unit) $$($(1)-unit).sim $$($(1)-unit).schem: UNIT    = $$($(1)-unit)
+$$($(1)-unit) $$($(1)-unit).sim $$($(1)-unit).schema: LIBNAME = $$($$($(1)-unit)-lib)
+$$($(1)-unit) $$($(1)-unit).sim $$($(1)-unit).schema: UNIT    = $$($(1)-unit)
 
 LIBS += $$($$($(1)-unit)-lib)
 
@@ -214,7 +214,7 @@ $$($(1)-unit): $$(TOP)/$(1)
 	touch $(TAGS)/$$@
 
 $$($(1)-unit).sim: all
-	@printf '\n[SYNTHESIS]    %-70s\n\n' "$$(LIBNAME).$$(subst _tb, ,$$(UNIT))"
+	@printf '\n[SYNTHESIS]    %-70s\n\n' "$$(SRC).$$(subst _tb, ,$$(UNIT))"
 	$$(SYNT)
 	printf '[SIMULATE]        %-70s\n\n' "$$(LIBNAME).$$(UNIT)"
 	$$(RUN)

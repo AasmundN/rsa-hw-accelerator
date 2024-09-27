@@ -21,7 +21,7 @@ architecture behaviour of prime_tb is
     );
   end component prime;
 
-  for DUT: prime use entity src.prime(behaviour);
+  for DUT: prime use entity src.prime(rtl);
 
 begin
 
