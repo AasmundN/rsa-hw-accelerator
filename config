@@ -1,6 +1,6 @@
-DIR  := /build
+DIR  := build
+SRC  := src
 GUI  := yes
-MODE := work
+MODE := dirname
 SIM  := ghdl
-SKIP :=
 V    := 0
