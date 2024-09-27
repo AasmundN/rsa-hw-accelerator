@@ -2,7 +2,7 @@
 .DEFAULT_GOAL := help
 
 # phony targets
-.PHONY: help config clean
+.PHONY: help config clean format
 
 # Compilation is not parallel-safe because most tools use per-library shared
 # files that they update after each compilation.
