@@ -54,7 +54,7 @@ package body license_pkg is
       C_SEPARATOR                                                                                             & LF & LF;
 
   begin
-    report (C_LICENSE_STR);
+    -- report (C_LICENSE_STR);
     return true;
   end;
 
