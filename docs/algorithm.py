@@ -62,8 +62,8 @@ def mod_exp(M, e, n):
 
 
 def main():
-    bitsize = 32
-    m = 2345
+    bitsize = 512
+    m = 20384723984723912834729387428934
 
     _, privkey = rsa.newkeys(bitsize)
 

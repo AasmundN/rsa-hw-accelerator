@@ -1,6 +1,6 @@
-DIR  := /build
-GUI  := yes
-MODE := work
-SIM  := ghdl
-SKIP :=
-V    := 0
+DIR   := build
+SRC   := src
+TESTS := tests
+GUI   := yes
+SIM   := ghdl
+V     := 0
