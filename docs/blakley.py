@@ -14,7 +14,10 @@ def mod_mul(A, B, n):
     for i in range(A.bit_length()):
         R = 2 * R + A_bits[i] * B
 
-        while R >= n:
+        if R >= n:
+            R -= n
+
+        if R >= n:
             R -= n
 
     return R
