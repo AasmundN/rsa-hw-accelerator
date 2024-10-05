@@ -6,14 +6,15 @@ def bitfield(n):
     return [int(x) for x in bin(n)[2:]]
 
 
-# calculate Montgomery product using add-shift method
-# proposed in RSA Hardware Implementation
+# calculate Montgomery product using add-shift
+# method from RSA Hardware Implementation doc
 def mon_pro(A, B, n):
     u = 0
     A_bits = bitfield(A)
-    A_bits.reverse()  # start from the least significant bit (LSB)
+    A_bits.reverse()
 
-    # loop over bits in A padded to length k starting from LSB
+    # loop over bits in A padded to
+    # length k starting from LSB
     for i in range(n.bit_length()):
         if i < len(A_bits):
             u = u + A_bits[i] * B
@@ -29,7 +30,8 @@ def mon_pro(A, B, n):
     return u
 
 
-# modular multiplication using Blakley's method
+# modular multiplication
+# using Blakley's method
 def mod_mul(A, B, n):
     R = 0
     A_bits = bitfield(A)
@@ -37,7 +39,6 @@ def mod_mul(A, B, n):
     for i in range(A.bit_length()):
         R = 2 * R + A_bits[i] * B
 
-        # this step can be simplified if we assume A,B < n
         R %= n
 
     return R
