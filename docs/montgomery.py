@@ -10,6 +10,7 @@ def bitfield(n):
 # method from RSA Hardware Implementation doc
 def mon_pro(A, B, n):
     u = 0
+
     A_bits = bitfield(A)
     A_bits.reverse()
 
@@ -33,13 +34,23 @@ def mon_pro(A, B, n):
 # modular multiplication
 # using Blakley's method
 def mod_mul(A, B, n):
-    R = 0
     A_bits = bitfield(A)
 
-    for i in range(A.bit_length()):
-        R = 2 * R + A_bits[i] * B
+    R = 0
 
-        R %= n
+    for A_bit in A_bits:
+        R = 2 * R + A_bit * B
+
+        # R <= 4n - 2
+
+        if R >= n:
+            R -= n
+
+        if R >= n:
+            R -= n
+
+        if R >= n:
+            R -= n
 
     return R
 
