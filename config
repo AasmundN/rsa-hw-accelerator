@@ -1,6 +1,4 @@
 DIR   := build
-SRC   := src
-TESTS := tests
+MODE  := work
 GUI   := yes
-SIM   := ghdl
 V     := 0

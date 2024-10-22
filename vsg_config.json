@@ -5,6 +5,15 @@
     },
     "process_018": {
       "disable": true
+    },
+    "signal_007": {
+      "disable": true
+    },
+    "variable_007": {
+      "disable": true
+    },
+    "instantiation_034": {
+      "disable": true
     }
   }
 }
