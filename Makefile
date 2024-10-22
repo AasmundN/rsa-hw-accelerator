@@ -37,25 +37,21 @@ $(error "$(GUI): invalid GUI value")
 endif
 endif
 
-# source and test file directories
-SRC ?= src
-TESTS ?= tests
-
 GHDLAFLAGS ?= --std=08 -frelaxed --workdir=$(TOP)/$(DIR) -Wno-hide -Wno-shared
 GHDLRFLAGS ?= --std=08 -frelaxed --workdir=$(TOP)/$(DIR) -Wno-hide -Wno-shared
 GHDLRUNOPTS ?=
 
 ifeq ($(SIM),ghdl)
     COM = @ghdl -a $(GHDLAFLAGS) --work=$(LIBNAME) $<
-	SYNT = ghdl --synth $(GHDLRFLAGS) --work=$(SRC) --out=none $(subst _tb, ,$(UNIT))
+	SYNT = ghdl --synth $(GHDLRFLAGS) --out=none $(UNIT)
 	SCHEMA = yosys -m ghdl -p \
-			"ghdl $(GHDLRFLAGS) --work=$(SRC) $(UNIT); show -notitle -format dot -prefix $(TOP)/$(DIR)/$(UNIT)"
+			"ghdl $(GHDLRFLAGS) $(UNIT); show -notitle -format dot -prefix $(TOP)/$(DIR)/$(UNIT)"
 
     ifeq ($(GUI),yes)
-        RUN = ghdl -r $(GHDLRFLAGS) --work=$(LIBNAME) $(UNIT) $(GHDLRUNOPTS) --wave=$(UNIT).ghw; \
+        RUN = ghdl -r $(GHDLRFLAGS) $(UNIT) $(GHDLRUNOPTS) --wave=$(UNIT).ghw; \
               printf '\nGHW file: %s.ghw\n' '$(DIR)/$(UNIT)'
     else
-        RUN = ghdl -r $(GHDLRFLAGS) --work=$(LIBNAME) $(UNIT) $(GHDLRUNOPTS)
+        RUN = ghdl -r $(GHDLRFLAGS) $(UNIT) $(GHDLRUNOPTS)
     endif
 else
     $(error "$(SIM): invalid SIM value")
@@ -65,6 +61,13 @@ endif
 DIR ?= /tmp/$(USER)/$(PROJECT)/$(SIM)
 # tags sub-directory of DIR
 TAGS := .tags
+
+MODE ?= work
+ifneq ($(MODE),work)
+ifneq ($(MODE),dirname)
+	$(error invalid MODE value: $(MODE))
+endif
+endif
 
 # verbosity level: 0: quiet, 1: verbose
 V ?= 0
@@ -88,8 +91,6 @@ Examples:
 
 Variable         valid values    description
     DIR          -               temporary build directory
-    SRC          -               source file directory
-    TESTS        -               test file directory
     GHDLAFLAGS   -               GHDL analysis options
     GHDLRFLAGS   -               GHDL simulation options
     GHDLRUNOPTS  -               GHDL RUNOPTS options
@@ -104,9 +105,10 @@ Goals:
     UNIT                         compile UNIT.vhd
     units                        print existing UNITs not in SKIP
     all                          compile all source files not in SKIP
-    UNIT.sim                     simulate UNIT, also rund synthesis test for DUT
+    UNIT.sim                     simulate UNIT, also runs synthesis test for DUT
     UNIT.wave                    view UNIT waveform using gtkwave
     UNIT.schema                  generate and open preview of unit schematics
+    UNIT.synth                   check that UNIT is synthesizable
     clean                        delete temporary build directory
 endef
 export HELP_message
@@ -114,8 +116,7 @@ export HELP_message
 define CONFIG_values
 Variable           current value
     DIR            $(DIR)
-    SRC            $(SRC)
-    TESTS          $(TESTS)
+    MODE           $(MODE)
     GHDLAFLAGS     $(GHDLAFLAGS)
     GHDLRFLAGS     $(GHDLRFLAGS)
     GHDLRUNOPTS    $(GHDLRUNOPTS)
@@ -185,7 +186,7 @@ SIMULATIONS := $(addsuffix .sim,$(UNITS))
 # all dependency files under $(TOP)
 MKS := $(filter %.mk,$(SRCMKS))
 
-.PHONY: units libs all $(addprefix .schema,$(UNITS)) $(addprefix .sim,$(UNITS)) $(addprefix .wave,$(UNITS))
+.PHONY: units libs all $(addprefix .schema,$(UNITS)) $(addprefix .sim,$(UNITS)) $(addprefix .synth,$(UNITS)) $(addprefix .wave,$(UNITS))
 
 # include dependency files
 include $(MKS)
@@ -201,10 +202,14 @@ LIBS :=
 define GEN_rule
 $(1)-unit := $$(patsubst %.vhd,%,$$(notdir $(1)))
 
-$$($(1)-unit)-lib ?= $$(notdir $$(patsubst %/,%,$$(dir $(1))))
+ifeq ($$(MODE),work)
+	$$($(1)-unit)-lib ?= work
+else
+	$$($(1)-unit)-lib ?= $$(notdir $$(patsubst %/,%,$$(dir $(1))))
+endif
 
-$$($(1)-unit) $$($(1)-unit).sim $$($(1)-unit).schema: LIBNAME = $$($$($(1)-unit)-lib)
-$$($(1)-unit) $$($(1)-unit).sim $$($(1)-unit).schema: UNIT    = $$($(1)-unit)
+$$($(1)-unit) $$($(1)-unit).sim $$($(1)-unit).schema $$($(1)-unit).synth: LIBNAME = $$($$($(1)-unit)-lib)
+$$($(1)-unit) $$($(1)-unit).sim $$($(1)-unit).schema $$($(1)-unit).synth: UNIT    = $$($(1)-unit)
 
 LIBS += $$($$($(1)-unit)-lib)
 
@@ -214,10 +219,12 @@ $$($(1)-unit): $$(TOP)/$(1)
 	touch $(TAGS)/$$@
 
 $$($(1)-unit).sim: all
-	@printf '\n[SYNTHESIS]    %-70s\n\n' "$$(SRC).$$(subst _tb, ,$$(UNIT))"
-	$$(SYNT)
 	printf '[SIMULATE]        %-70s\n\n' "$$(LIBNAME).$$(UNIT)"
 	$$(RUN)
+
+$$($(1)-unit).synth: all
+	@printf '\n[SYNTHESIS]    %-70s\n\n' "$$(LIBNAME).$$(UNIT)"
+	$$(SYNT)
 
 $$($(1)-unit).schema: all
 	@printf '\n[SCHEMATIC]    %-70s\n' "$$(LIBNAME).$$(subst _tb, ,$$(UNIT))"

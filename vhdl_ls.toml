@@ -5,10 +5,7 @@ uvvm_util.files = [
 ]
 uvvm_util.is_third_party = true
 
-src.files = [
-  "src/*.vhd",
-]
-
-tests.files = [
-  "tests/*.vhd",
+worklib.files = [
+  "source/*.vhd",
+  "testbench/*.vhd",
 ]
