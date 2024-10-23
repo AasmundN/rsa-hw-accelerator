@@ -43,7 +43,7 @@ package adaptations_pkg is
   constant C_LOG_TIME_BASE      : time    := ns; -- Unit in which time is shown in log (ns | ps)
   constant C_LOG_TIME_DECIMALS  : natural := 1; -- Decimals to show for given C_LOG_TIME_BASE
   constant C_LOG_SCOPE_WIDTH    : natural := 30; -- Maximum scope length
-  constant C_LOG_LINE_WIDTH     : natural := 175;
+  constant C_LOG_LINE_WIDTH     : natural := 115;
   constant C_LOG_INFO_WIDTH     : natural := C_LOG_LINE_WIDTH - C_LOG_PREFIX_WIDTH;
 
   constant C_USE_BACKSLASH_N_AS_LF : boolean := true; -- If true interprets '\n' as Line feed
