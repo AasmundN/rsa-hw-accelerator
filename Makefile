@@ -223,11 +223,11 @@ $$($(1)-unit).sim: all
 	$$(RUN)
 
 $$($(1)-unit).synth: all
-	@printf '\n[SYNTHESIS]    %-70s\n\n' "$$(LIBNAME).$$(UNIT)"
+	@printf '[SYNTHESIS]    %-70s\n\n' "$$(LIBNAME).$$(UNIT)"
 	$$(SYNT)
 
 $$($(1)-unit).schema: all
-	@printf '\n[SCHEMATIC]    %-70s\n' "$$(LIBNAME).$$(subst _tb, ,$$(UNIT))"
+	@printf '[SCHEMATIC]    %-70s\n' "$$(LIBNAME).$$(subst _tb, ,$$(UNIT))"
 	$$(SCHEMA)
 	dot -T svg -o $$(TOP)/$$(DIR)/$$(UNIT).svg $$(TOP)/$$(DIR)/$$(UNIT).dot
 	open $$(TOP)/$$(DIR)/$$(UNIT).svg
