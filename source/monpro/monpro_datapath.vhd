@@ -7,7 +7,7 @@ library ieee;
 
 entity monpro_datapath is
   generic (
-    bit_width : integer := 4
+    bit_width : integer := 256
   );
   port (
     -----------------------------------------------------------------------------
