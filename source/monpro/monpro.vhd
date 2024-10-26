@@ -41,13 +41,16 @@ end entity monpro;
 
 architecture rtl of monpro is
 
+  -- Internal reset signal
   signal reset : std_logic;
 
+  -- ALU control signals
   signal alu_opcode    : alu_opcode_t;
   signal alu_a_sel     : std_logic;
   signal alu_b_sel     : std_logic;
   signal alu_less_than : std_logic;
 
+  -- Internal register control
   signal outreg_enable         : std_logic;
   signal shiftreg_enable       : std_logic;
   signal shiftreg_shift_enable : std_logic;
