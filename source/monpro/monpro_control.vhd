@@ -9,7 +9,7 @@ entity monpro_control is
   port (
     -- Clocks and reset
     clk   : in    std_logic;
-    reset : in    std_logic;
+    reset : out   std_logic;
 
     -- Entity enable/disable signals
     monpro_en  : out   std_logic;
@@ -21,7 +21,7 @@ entity monpro_control is
     i_counter     : in    std_logic_vector(7 downto 0);
 
     -- Register control
-    outreg_en          : out   std_logic;
+    out_reg_en         : out   std_logic;
     shift_reg_en       : out   std_logic;
     shift_reg_shift_en : out   std_logic;
 
@@ -50,11 +50,11 @@ begin
   main_state_process : process (state) is
   begin
 
-    -- TODO: Sett defaults
     monpro_en          <= '0';
-    outreg_en          <= '0';
+    out_reg_en         <= '0';
     shift_reg_en       <= '0';
     shift_reg_shift_en <= '0';
+    reset              <= '0';
 
     out_valid      <= '0';
     opcode         <= pass;
@@ -66,39 +66,125 @@ begin
 
       when idle =>
 
-        out_valid <= '1';
+        out_valid          <= '0';
+        shift_reg_shift_en <= '0';
+
+        if (monpro_en = '1') then
+          state_next <= start;
+        else
+          state_next <= idle;
+        end if;
 
       when start =>
 
-        out_valid <= '1';
+        shift_reg_en <= '0';
+        reset        <= '1';
+
+        if (monpro_en = '1') then
+          state_next <= add_b;
+        else
+          state_next <= idle;
+        end if;
 
       when add_b =>
 
-        out_valid <= '1';
+        opcode     <= add;
+        out_reg_en <= '1';
+        alu_a_sel  <= '0';                                                   -- TODO: create type enum
+        alu_b_sel  <= '1';                                                   -- TODO: create type enum
+
+        if (is_odd = '1' and monpro_en = '1') then
+          state_next <= add_n;
+        else
+          state_next <= shift;
+        end if;
 
       when add_n =>
 
-        out_valid <= '1';
+        opcode     <= add;
+        out_reg_en <= '1';
+        alu_a_sel  <= '0';                                                   -- TODO: create type enum
+        alu_b_sel  <= '0';                                                   -- TODO: create type enum
+
+        if (monpro_en = '1') then
+          state_next <= shift;
+        else
+          state_next <= idle;
+        end if;
 
       when shift =>
 
-        out_valid <= '1';
+        opcode             <= pass;
+        out_reg_en         <= '1';
+        shift_reg_shift_en <= '1';
+        alu_a_sel          <= '1';
+        incr_i_counter     <= '1';
+
+        if (monpro_en = '1') then
+          if (to_integer(unsigned(i_counter)) < 255) then
+            state_next <= add_b;
+          else
+            state_next <= comp;
+          end if;
+        else
+          state_next <= idle;
+        end if;
 
       when comp =>
 
-        out_valid <= '1';
+        opcode             <= sub;
+        out_reg_en         <= '0';
+        shift_reg_shift_en <= '0';
+        alu_a_sel          <= '0';
+        alu_b_sel          <= '0';                                           -- TODO: verify this. Create enum.
+
+        if (monpro_en = '1') then
+          if (alu_less_than = '1') then
+            state_next <= save;
+          else
+            state_next <= valid;
+          end if;
+        else
+          state_next <= idle;
+        end if;
 
       when save =>
 
-        out_valid <= '1';
+        opcode     <= sub;
+        out_reg_en <= '1';
+        alu_a_sel  <= '0';
+        alu_b_sel  <= '0';
+
+        if (monpro_en = '1') then
+          state_next <= valid;
+        else
+          state_next <= idle;
+        end if;
 
       when valid =>
 
-        out_valid <= '1';
+        out_reg_en <= '0';
+        out_valid  <= '1';
+
+        if (monpro_en = '1') then
+          state_next <= valid;
+        else
+          state_next <= idle;
+        end if;
 
       when others =>
 
-        out_valid <= '1';
+        monpro_en          <= '0';
+        out_reg_en         <= '0';
+        shift_reg_en       <= '0';
+        shift_reg_shift_en <= '0';
+        reset              <= '0';
+
+        out_valid      <= '0';
+        opcode         <= pass;
+        alu_a_sel      <= '0';
+        alu_b_sel      <= '0';
+        incr_i_counter <= '0';
 
     end case;
 
