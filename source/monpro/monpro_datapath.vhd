@@ -37,7 +37,12 @@ entity monpro_datapath is
     modulus   : in    std_logic_vector(bit_width - 1 downto 0);
     operand_a : in    std_logic_vector(bit_width - 1 downto 0);
     operand_b : in    std_logic_vector(bit_width - 1 downto 0);
-    result    : out   std_logic_vector(bit_width - 1 downto 0)
+    result    : out   std_logic_vector(bit_width - 1 downto 0);
+
+    -----------------------------------------------------------------------------
+    -- u(0) xor (a(i) and b(0))
+    -----------------------------------------------------------------------------
+    is_odd : out   std_logic
   );
 end entity monpro_datapath;
 
@@ -47,9 +52,8 @@ architecture rtl of monpro_datapath is
   signal and_b_a : std_logic_vector(bit_width - 1 downto 0);
 
   -- Internal registers
-  signal outreg_r     : std_logic_vector(bit_width - 1 downto 0);
-  signal shiftreg_r   : std_logic_vector(bit_width - 1 downto 0);
-  signal shiftreg_lsb : std_logic;
+  signal outreg_r   : std_logic_vector(bit_width - 1 downto 0);
+  signal shiftreg_r : std_logic_vector(bit_width - 1 downto 0);
 
   -- Output from bit shifter
   signal outreg_right_shifted : std_logic_vector(bit_width - 1 downto 0);
@@ -61,8 +65,8 @@ architecture rtl of monpro_datapath is
 
 begin
 
-  result       <= outreg_r;
-  shiftreg_lsb <= shiftreg_r(0);
+  result <= outreg_r;
+  is_odd <= outreg_r(0) xor (operand_b(0) and shiftreg_r(0));
 
   alu : entity work.alu(rtl)
     generic map (
@@ -76,7 +80,7 @@ begin
       less_than => alu_less_than
     );
 
-  alu_a_mux : entity work.mux2(rtl)
+  alu_a_mux : entity work.mux_2to1(rtl)
     generic map (
       bit_width => bit_width
     )
@@ -87,10 +91,10 @@ begin
       sel => alu_a_sel
     );
 
-  -- shiftreg_lsb and operand_b are different sizes, might be sussy
-  and_b_a <= shiftreg_lsb and operand_b;
+  -- shiftreg_r(0) and operand_b are different sizes, might be sussy
+  and_b_a <= shiftreg_r(0) and operand_b;
 
-  alu_b_mux : entity work.mux2(rtl)
+  alu_b_mux : entity work.mux_2to1(rtl)
     generic map (
       bit_width => bit_width
     )
