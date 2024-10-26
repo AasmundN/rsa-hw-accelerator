@@ -9,6 +9,6 @@ uvvm_util.is_third_party = true
 
 worklib.files = [
   "source/*.vhd",
-  "source/shared.vhd"
+  "source/monpro/*.vhd",
   "testbench/*.vhd",
 ]
