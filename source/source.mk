@@ -1,3 +1,3 @@
 alu: utils
 monpro: monpro_datapath
-monpro_datapath: alu mux2
+monpro_datapath: alu mux_2to1

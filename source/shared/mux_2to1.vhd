@@ -1,27 +1,25 @@
 -----------------------------------------------------------------------------
--- 3:1 binary multiplexer, with variable bitwidth of signals
+-- 2:1 binary multiplexer, with variable bitwidth of signals
 ----------------------------------------------------------------------------
 
 library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
-entity mux3 is
+entity mux_2to1 is
   generic (
     bit_width : integer := 256
   );
   port (
     a0 : in    std_logic_vector(bit_width - 1 downto 0);
     a1 : in    std_logic_vector(bit_width - 1 downto 0);
-    a2 : in    std_logic_vector(bit_width - 1 downto 0);
+    b  : out   std_logic_vector(bit_width - 1 downto 0);
 
-    b : out   std_logic_vector(bit_width - 1 downto 0);
-
-    sel : in    std_logic_vector(1 downto 0)
+    sel : in    std_logic
   );
-end entity mux3;
+end entity mux_2to1;
 
-architecture rtl of mux3 is
+architecture rtl of mux_2to1 is
 
 begin
 
@@ -30,17 +28,13 @@ begin
 
     case(sel) is
 
-      when "00" =>
+      when '0' =>
 
         b <= a0;
 
-      when "01" =>
+      when '1' =>
 
         b <= a1;
-
-      when "10" =>
-
-        b <= a2;
 
       when others =>
 
