@@ -26,6 +26,8 @@ entity modmul is
     -----------------------------------------------------------------------------
     -- control signals
     -----------------------------------------------------------------------------
+    clk: in std_logic;
+    
     enable : in std_logic;
     output_valid : out std_logic
 
