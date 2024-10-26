@@ -29,7 +29,7 @@ entity alu is
     -----------------------------------------------------------------------------
     -- ALU operation output
     -----------------------------------------------------------------------------
-    result : out   std_logic_vector(bit_width - 1 downto 0)
+    alu_result : out   std_logic_vector(bit_width - 1 downto 0)
   );
 end entity alu;
 
@@ -37,36 +37,41 @@ architecture rtl of alu is
 
 begin
 
+  -- Perform main ALU operation
   process (opcode, operand_a, operand_b) is
   begin
 
-    -- Set less_than flag
+    case (opcode) is
+
+      when pass =>
+
+        alu_result <= operand_a;
+
+      when sub =>
+
+        alu_result <= std_logic_vector(unsigned(operand_a) - unsigned(operand_b));
+
+      when add =>
+
+        alu_result <= std_logic_vector(unsigned(operand_a) + unsigned(operand_b));
+
+      when others =>
+
+        alu_result <= (others => '0');
+
+    end case;
+
+  end process;
+
+  -- Set less_than flag
+  process (operand_a, operand_b) is
+  begin
+
     if (unsigned(operand_a) < unsigned(operand_b)) then
       less_than <= '1';
     else
       less_than <= '0';
     end if;
-
-    -- Perform main ALU operation
-    case (opcode) is
-
-      when pass =>
-
-        result <= operand_a;
-
-      when sub =>
-
-        result <= std_logic_vector(unsigned(operand_a) - unsigned(operand_b));
-
-      when add =>
-
-        result <= std_logic_vector(unsigned(operand_a) + unsigned(operand_b));
-
-      when others =>
-
-        result <= (others => '0');
-
-    end case;
 
   end process;
 

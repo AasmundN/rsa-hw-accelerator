@@ -21,7 +21,13 @@ entity monpro is
     -----------------------------------------------------------------------------
     -- Result of calculation
     -----------------------------------------------------------------------------
-    result : out   std_logic_vector(bit_width - 1 downto 0)
+    result : out   std_logic_vector(bit_width - 1 downto 0);
+
+    -----------------------------------------------------------------------------
+    -- Control signals
+    -----------------------------------------------------------------------------
+    enable       : in    std_logic;
+    output_valid : out   std_logic
   );
 end entity monpro;
 
