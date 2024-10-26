@@ -25,3 +25,11 @@ entity modmul_datapath is
         alu_a_less_than_b: out std_logic;        
     );
 end entity;
+
+architecture rtl of modmul_datapath is
+
+begin
+
+    
+
+end architecture rtl;
