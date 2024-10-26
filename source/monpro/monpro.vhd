@@ -77,4 +77,12 @@ begin
       result                => result
     );
 
+    control : entity work.monpro_control(rtl)
+    port map (
+      clk                   => clk,
+      reset                 => reset,
+
+      -- TODO FILL THESE OUT
+    )
+
 end architecture rtl;

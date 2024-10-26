@@ -7,13 +7,15 @@ library ieee;
 
 entity monpro_control is
   port (
+
+ -- TODO: MISSING INTERNAL COUNTER. MOVE THE EXISTING TO I_COUNTER TO THE ARCHITECTURE.
+
     -- Clocks and reset
     clk   : in    std_logic;
     reset : out   std_logic;
 
-    -- Entity enable/disable signals
-    monpro_en  : out   std_logic;
-    monpro_val : in    std_logic; -- Signals to external entities that the output is valid.
+    -- Entity enable
+    enable  : out   std_logic;
 
     -- Flags and counters
     alu_less_than : in    std_logic;
@@ -26,7 +28,7 @@ entity monpro_control is
     shift_reg_shift_en : out   std_logic;
 
     -- Data control
-    out_valid      : out   std_logic;
+    out_reg_valid      : out   std_logic;
     opcode         : out   alu_opcode_t;
     alu_a_sel      : out   std_logic;
     alu_b_sel      : out   std_logic;
@@ -50,13 +52,13 @@ begin
   main_state_process : process (state) is
   begin
 
-    monpro_en          <= '0';
+    enable          <= '0';
     out_reg_en         <= '0';
     shift_reg_en       <= '0';
     shift_reg_shift_en <= '0';
     reset              <= '0';
 
-    out_valid      <= '0';
+    out_reg_valid      <= '0';
     opcode         <= pass;
     alu_a_sel      <= '0';
     alu_b_sel      <= '0';
@@ -66,10 +68,10 @@ begin
 
       when idle =>
 
-        out_valid          <= '0';
+        out_reg_valid          <= '0';
         shift_reg_shift_en <= '0';
 
-        if (monpro_en = '1') then
+        if (enable = '1') then
           state_next <= start;
         else
           state_next <= idle;
@@ -80,7 +82,7 @@ begin
         shift_reg_en <= '0';
         reset        <= '1';
 
-        if (monpro_en = '1') then
+        if (enable = '1') then
           state_next <= add_b;
         else
           state_next <= idle;
@@ -93,7 +95,7 @@ begin
         alu_a_sel  <= '0';                                                   -- TODO: create type enum
         alu_b_sel  <= '1';                                                   -- TODO: create type enum
 
-        if (is_odd = '1' and monpro_en = '1') then
+        if (is_odd = '1' and enable = '1') then
           state_next <= add_n;
         else
           state_next <= shift;
@@ -106,7 +108,7 @@ begin
         alu_a_sel  <= '0';                                                   -- TODO: create type enum
         alu_b_sel  <= '0';                                                   -- TODO: create type enum
 
-        if (monpro_en = '1') then
+        if (enable = '1') then
           state_next <= shift;
         else
           state_next <= idle;
@@ -120,7 +122,7 @@ begin
         alu_a_sel          <= '1';
         incr_i_counter     <= '1';
 
-        if (monpro_en = '1') then
+        if (enable = '1') then
           if (to_integer(unsigned(i_counter)) < 255) then
             state_next <= add_b;
           else
@@ -138,7 +140,7 @@ begin
         alu_a_sel          <= '0';
         alu_b_sel          <= '0';                                           -- TODO: verify this. Create enum.
 
-        if (monpro_en = '1') then
+        if (enable = '1') then
           if (alu_less_than = '1') then
             state_next <= save;
           else
@@ -155,7 +157,7 @@ begin
         alu_a_sel  <= '0';
         alu_b_sel  <= '0';
 
-        if (monpro_en = '1') then
+        if (enable = '1') then
           state_next <= valid;
         else
           state_next <= idle;
@@ -164,9 +166,9 @@ begin
       when valid =>
 
         out_reg_en <= '0';
-        out_valid  <= '1';
+        out_reg_valid  <= '1';
 
-        if (monpro_en = '1') then
+        if (enable = '1') then
           state_next <= valid;
         else
           state_next <= idle;
@@ -174,13 +176,13 @@ begin
 
       when others =>
 
-        monpro_en          <= '0';
+        enable          <= '0';
         out_reg_en         <= '0';
         shift_reg_en       <= '0';
         shift_reg_shift_en <= '0';
         reset              <= '0';
 
-        out_valid      <= '0';
+        out_reg_valid      <= '0';
         opcode         <= pass;
         alu_a_sel      <= '0';
         alu_b_sel      <= '0';
