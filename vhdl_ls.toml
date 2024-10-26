@@ -1,3 +1,5 @@
+standard = "2008"
+
 [libraries]
 
 uvvm_util.files = [
