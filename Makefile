@@ -229,8 +229,8 @@ $$($(1)-unit).synth: all
 $$($(1)-unit).schema: all
 	@printf '[SCHEMATIC]    %-70s\n' "$$(LIBNAME).$$(subst _tb, ,$$(UNIT))"
 	@printf '\nRemoving old .dot and .svg files\n'
-	@rm -r $$(TOP)/$$(DIR)/schema
-	@mkdir $$(TOP)/$$(DIR)/schema
+	@mkdir -p $$(TOP)/$$(DIR)/schema
+	@rm -f $$(TOP)/$$(DIR)/schema/*.svg $$(TOP)/$$(DIR)/schema/*.dot
 	$$(SCHEMA)
 	dot -Tsvg -O $$(TOP)/$$(DIR)/$$(UNIT).dot
 	@mv *.svg schema/
