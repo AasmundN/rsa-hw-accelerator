@@ -29,7 +29,7 @@ entity alu is
     -----------------------------------------------------------------------------
     -- ALU operation output
     -----------------------------------------------------------------------------
-    alu_result : out   std_logic_vector(bit_width - 1 downto 0)
+    result : out   std_logic_vector(bit_width - 1 downto 0)
   );
 end entity alu;
 
@@ -45,19 +45,19 @@ begin
 
       when pass =>
 
-        alu_result <= operand_a;
+        result <= operand_a;
 
       when sub =>
 
-        alu_result <= std_logic_vector(unsigned(operand_a) - unsigned(operand_b));
+        result <= std_logic_vector(unsigned(operand_a) - unsigned(operand_b));
 
       when add =>
 
-        alu_result <= std_logic_vector(unsigned(operand_a) + unsigned(operand_b));
+        result <= std_logic_vector(unsigned(operand_a) + unsigned(operand_b));
 
       when others =>
 
-        alu_result <= (others => '0');
+        result <= (others => '0');
 
     end case;
 
