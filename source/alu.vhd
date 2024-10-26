@@ -37,17 +37,10 @@ architecture rtl of alu is
 
 begin
 
+  -- Perform main ALU operation
   process (opcode, operand_a, operand_b) is
   begin
 
-    -- Set less_than flag
-    if (unsigned(operand_a) < unsigned(operand_b)) then
-      less_than <= '1';
-    else
-      less_than <= '0';
-    end if;
-
-    -- Perform main ALU operation
     case (opcode) is
 
       when pass =>
@@ -67,6 +60,18 @@ begin
         result <= (others => '0');
 
     end case;
+
+  end process;
+
+  -- Set less_than flag
+  process (operand_a, operand_b) is
+  begin
+
+    if (unsigned(operand_a) < unsigned(operand_b)) then
+      less_than <= '1';
+    else
+      less_than <= '0';
+    end if;
 
   end process;
 
