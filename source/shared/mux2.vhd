@@ -6,9 +6,9 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
-entity muxb2 is
+entity mux2 is
   generic (
-    bitwidth : integer := 1
+    bitwidth : integer := 256
   );
   port (
     a0 : in    std_logic_vector(bitwidth - 1 downto 0);
@@ -17,9 +17,9 @@ entity muxb2 is
 
     sel : out   std_logic
   );
-end entity muxb2;
+end entity mux2;
 
-architecture rtl of muxb2 is
+architecture rtl of mux2 is
 
 begin
 
