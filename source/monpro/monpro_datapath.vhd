@@ -58,7 +58,8 @@ architecture rtl of monpro_datapath is
 
 begin
 
-  result <= outreg_r;
+  result       <= outreg_r;
+  shiftreg_lsb <= shiftreg_r(0);
 
   alu : entity work.alu(rtl)
     generic map (
@@ -127,8 +128,7 @@ begin
         shiftreg_r <= operand_a;
       -- Shift register content
       elsif (shiftreg_shift_enable = '1') then
-        shiftreg_r   <= '0' & shiftreg_r(bit_width - 1 downto 1);
-        shiftreg_lsb <= shiftreg_r(0);
+        shiftreg_r <= '0' & shiftreg_r(bit_width - 1 downto 1);
       end if;
     end if;
 
