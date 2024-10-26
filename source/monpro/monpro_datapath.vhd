@@ -43,6 +43,9 @@ end entity monpro_datapath;
 
 architecture rtl of monpro_datapath is
 
+  -- b anded with ith bit of a
+  signal and_b_a : std_logic_vector(255 downto 0);
+
   -- Internal registers
   signal outreg_r     : std_logic_vector(bit_width - 1 downto 0);
   signal shiftreg_r   : std_logic_vector(bit_width - 1 downto 0);
@@ -84,13 +87,16 @@ begin
       sel => alu_a_sel
     );
 
+  -- b anded with ith bit of a
+  and_b_a <= shiftreg_lsb and operand_b;
+
   alu_b_mux : entity work.mux2(rtl)
     generic map (
       bit_width => bit_width
     )
     port map (
       a0  => modulus,
-      a1  => shiftreg_lsb and operand_b,
+      a1  => and_b_a,
       b   => alu_b,
       sel => alu_b_sel
     );
