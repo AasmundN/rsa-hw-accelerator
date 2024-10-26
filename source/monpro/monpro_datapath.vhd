@@ -73,27 +73,27 @@ begin
       less_than => alu_less_than
     );
 
-  alu_a_mux : process (outreg_r, outreg_right_shifted) is
-  begin
+  alu_a_mux : entity work.mux2(rtl)
+    generic map (
+      bit_width => bit_width
+    )
+    port map (
+      a0  => outreg_r,
+      a1  => outreg_right_shifted,
+      b   => alu_a,
+      sel => alu_a_sel
+    );
 
-    if (alu_a_sel = '0') then
-      alu_a <= outreg_r;
-    else
-      alu_a <= outreg_right_shifted;
-    end if;
-
-  end process alu_a_mux;
-
-  alu_b_mux : process (modulus, operand_b, shiftreg_lsb) is
-  begin
-
-    if (alu_b_sel = '0') then
-      alu_b <= modulus;
-    else
-      alu_b <= shiftreg_lsb and operand_b;
-    end if;
-
-  end process alu_b_mux;
+  alu_b_mux : entity work.mux2(rtl)
+    generic map (
+      bit_width => bit_width
+    )
+    port map (
+      a0  => modulus,
+      a1  => shiftreg_lsb and operand_b,
+      b   => alu_b,
+      sel => alu_b_sel
+    );
 
   -- Right shift one bit
   bit_shifter : process (outreg_r) is

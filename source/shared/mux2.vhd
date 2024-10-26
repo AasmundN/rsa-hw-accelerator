@@ -8,14 +8,14 @@ library ieee;
 
 entity mux2 is
   generic (
-    bitwidth : integer := 256
+    bit_width : integer := 256
   );
   port (
-    a0 : in    std_logic_vector(bitwidth - 1 downto 0);
-    a1 : in    std_logic_vector(bitwidth - 1 downto 0);
-    b  : out   std_logic_vector(bitwidth - 1 downto 0);
+    a0 : in    std_logic_vector(bit_width - 1 downto 0);
+    a1 : in    std_logic_vector(bit_width - 1 downto 0);
+    b  : out   std_logic_vector(bit_width - 1 downto 0);
 
-    sel : out   std_logic
+    sel : in    std_logic
   );
 end entity mux2;
 
