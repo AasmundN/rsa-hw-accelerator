@@ -37,7 +37,12 @@ entity monpro_datapath is
     modulus   : in    std_logic_vector(bit_width - 1 downto 0);
     operand_a : in    std_logic_vector(bit_width - 1 downto 0);
     operand_b : in    std_logic_vector(bit_width - 1 downto 0);
-    result    : out   std_logic_vector(bit_width - 1 downto 0)
+    result    : out   std_logic_vector(bit_width - 1 downto 0);
+
+    -----------------------------------------------------------------------------
+    -- u(0) xor (a(i) and b(0))
+    -----------------------------------------------------------------------------
+    is_odd : out   std_logic
   );
 end entity monpro_datapath;
 
@@ -47,26 +52,26 @@ architecture rtl of monpro_datapath is
   signal and_b_a : std_logic_vector(bit_width - 1 downto 0);
 
   -- Internal registers
-  signal outreg_r     : std_logic_vector(bit_width - 1 downto 0);
-  signal shiftreg_r   : std_logic_vector(bit_width - 1 downto 0);
-  signal shiftreg_lsb : std_logic;
+  -- Intermediary result has size bit_width+1
+  signal outreg_r   : std_logic_vector(bit_width downto 0);
+  signal shiftreg_r : std_logic_vector(bit_width - 1 downto 0);
 
   -- Output from bit shifter
-  signal outreg_right_shifted : std_logic_vector(bit_width - 1 downto 0);
+  signal outreg_right_shifted : std_logic_vector(bit_width downto 0);
 
   -- ALU inputs and outputs
-  signal alu_a      : std_logic_vector(bit_width - 1 downto 0);
-  signal alu_b      : std_logic_vector(bit_width - 1 downto 0);
-  signal alu_result : std_logic_vector(bit_width - 1 downto 0);
+  signal alu_a      : std_logic_vector(bit_width downto 0);
+  signal alu_b      : std_logic_vector(bit_width downto 0);
+  signal alu_result : std_logic_vector(bit_width downto 0);
 
 begin
 
-  result       <= outreg_r;
-  shiftreg_lsb <= shiftreg_r(0);
+  result <= outreg_r(bit_width - 1 downto 0);
+  is_odd <= outreg_r(0) xor (operand_b(0) and shiftreg_r(0));
 
   alu : entity work.alu(rtl)
     generic map (
-      bit_width => bit_width
+      bit_width => bit_width + 1
     )
     port map (
       operand_a => alu_a,
@@ -76,9 +81,9 @@ begin
       less_than => alu_less_than
     );
 
-  alu_a_mux : entity work.mux2(rtl)
+  alu_a_mux : entity work.mux_2to1(rtl)
     generic map (
-      bit_width => bit_width
+      bit_width => bit_width + 1
     )
     port map (
       a0  => outreg_r,
@@ -87,16 +92,16 @@ begin
       sel => alu_a_sel
     );
 
-  -- shiftreg_lsb and operand_b are different sizes, might be sussy
-  and_b_a <= shiftreg_lsb and operand_b;
+  -- shiftreg_r(0) and operand_b are different sizes, might be sussy
+  and_b_a <= operand_b and shiftreg_r(0);
 
-  alu_b_mux : entity work.mux2(rtl)
+  alu_b_mux : entity work.mux_2to1(rtl)
     generic map (
-      bit_width => bit_width
+      bit_width => bit_width + 1
     )
     port map (
-      a0  => modulus,
-      a1  => and_b_a,
+      a0  => '0' & modulus,
+      a1  => '0' & and_b_a,
       b   => alu_b,
       sel => alu_b_sel
     );
@@ -105,7 +110,7 @@ begin
   bit_shifter : process (outreg_r) is
   begin
 
-    outreg_right_shifted <= '0' & outreg_r(bit_width - 1 downto 1);
+    outreg_right_shifted <= '0' & outreg_r(bit_width downto 1);
 
   end process bit_shifter;
 
