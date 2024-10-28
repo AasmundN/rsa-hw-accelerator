@@ -52,7 +52,6 @@ begin
   main_state_process : process (state) is
   begin
 
-    -- enable          <= '0';
     out_reg_en         <= '0';
     shift_reg_en       <= '0';
     shift_reg_shift_en <= '0';
@@ -63,6 +62,8 @@ begin
     alu_a_sel      <= '0';
     alu_b_sel      <= '0';
     incr_i_counter <= '0';
+
+    state_next <= idle;
 
     case(state) is
 
@@ -184,6 +185,8 @@ begin
         alu_a_sel      <= '0';
         alu_b_sel      <= '0';
         incr_i_counter <= '0';
+
+        state_next <= idle;
 
     end case;
 
