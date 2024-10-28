@@ -45,7 +45,7 @@ ifeq ($(SIM),ghdl)
     COM = @ghdl -a $(GHDLAFLAGS) --work=$(LIBNAME) $<
 	SYNT = ghdl --synth $(GHDLRFLAGS) --out=none $(UNIT)
 	SCHEMA = yosys -m ghdl -p \
-			"ghdl $(GHDLRFLAGS) $(UNIT); show -notitle -format dot -prefix $(TOP)/$(DIR)/$(UNIT)"
+			"ghdl $(GHDLRFLAGS) $(UNIT); show -stretch -width -format dot -prefix $(TOP)/$(DIR)/$(UNIT)"
 
     ifeq ($(GUI),yes)
         RUN = ghdl -r $(GHDLRFLAGS) $(UNIT) $(GHDLRUNOPTS) --wave=$(UNIT).ghw; \
@@ -228,9 +228,14 @@ $$($(1)-unit).synth: all
 
 $$($(1)-unit).schema: all
 	@printf '[SCHEMATIC]    %-70s\n' "$$(LIBNAME).$$(subst _tb, ,$$(UNIT))"
+	@printf '\nRemoving old .dot and .svg files\n'
+	@mkdir -p $$(TOP)/$$(DIR)/schema
+	@rm -f $$(TOP)/$$(DIR)/schema/*.svg $$(TOP)/$$(DIR)/schema/*.dot
 	$$(SCHEMA)
-	dot -T svg -o $$(TOP)/$$(DIR)/$$(UNIT).svg $$(TOP)/$$(DIR)/$$(UNIT).dot
-	open $$(TOP)/$$(DIR)/$$(UNIT).svg
+	dot -Tsvg -O $$(TOP)/$$(DIR)/$$(UNIT).dot
+	@mv *.svg schema/
+	@mv *.dot schema/
+	@printf '\n[SCHEMATIC]    Schematics generated in output directory\n'
 
 endef
 $(foreach f,$(SRCS),$(eval $(call GEN_rule,$(f))))

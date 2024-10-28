@@ -55,6 +55,9 @@ architecture rtl of monpro is
   signal shiftreg_enable       : std_logic;
   signal shiftreg_shift_enable : std_logic;
 
+  -- Used during execution of algorithm
+  signal is_odd : std_logic;
+
 begin
 
   datapath : entity work.monpro_datapath(rtl)
@@ -74,7 +77,8 @@ begin
       modulus               => modulus,
       operand_a             => operand_a,
       operand_b             => operand_b,
-      result                => result
+      result                => result,
+      is_odd                => is_odd
     );
 
     control : entity work.monpro_control(rtl)
