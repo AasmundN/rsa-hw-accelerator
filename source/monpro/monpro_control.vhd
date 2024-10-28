@@ -10,17 +10,15 @@ entity monpro_control is
 
  -- TODO: MISSING INTERNAL COUNTER. MOVE THE EXISTING TO I_COUNTER TO THE ARCHITECTURE.
 
-    -- Clocks and reset
+    -- Clock
     clk   : in    std_logic;
-    reset : out   std_logic;
 
     -- Entity enable
-    enable  : out   std_logic;
+    enable  : in   std_logic;
 
     -- Flags and counters
     alu_less_than : in    std_logic;
     is_odd        : in    std_logic;
-    i_counter     : in    std_logic_vector(7 downto 0);
 
     -- Register control
     out_reg_en         : out   std_logic;
@@ -31,8 +29,7 @@ entity monpro_control is
     out_reg_valid      : out   std_logic;
     opcode         : out   alu_opcode_t;
     alu_a_sel      : out   std_logic;
-    alu_b_sel      : out   std_logic;
-    incr_i_counter : out   std_logic
+    alu_b_sel      : out   std_logic
   );
 end entity monpro_control;
 
@@ -46,13 +43,16 @@ architecture rtl of monpro_control is
   );
 
   signal state, state_next : state_type;
+  signal reset : std_logic; -- Internal reset for registers
+  signal i_counter :  std_logic_vector(7 downto 0); -- Used to store loop counter
+  signal incr_i_counter : std_logic;
 
 begin
 
   main_state_process : process (state) is
   begin
 
-    enable          <= '0';
+    -- enable          <= '0';
     out_reg_en         <= '0';
     shift_reg_en       <= '0';
     shift_reg_shift_en <= '0';
@@ -67,8 +67,7 @@ begin
     case(state) is
 
       when idle =>
-
-        out_reg_valid          <= '0';
+        out_reg_valid      <= '0';
         shift_reg_shift_en <= '0';
 
         if (enable = '1') then
@@ -175,8 +174,6 @@ begin
         end if;
 
       when others =>
-
-        enable          <= '0';
         out_reg_en         <= '0';
         shift_reg_en       <= '0';
         shift_reg_shift_en <= '0';
@@ -202,5 +199,16 @@ begin
     end if;
 
   end process update_state;
+
+  update_counter : process (reset, clk) is
+  begin
+    if (reset = '0') then
+      i_counter <= (others => '0');
+    elsif (rising_edge(clk)) then
+      if (incr_i_counter = '1') then
+        i_counter <= std_logic_vector(unsigned(i_counter) + 1);
+      end if ;
+    end if ;
+  end process update_counter;
 
 end architecture rtl;
