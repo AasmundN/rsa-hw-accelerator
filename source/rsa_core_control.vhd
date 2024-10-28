@@ -24,6 +24,13 @@ architecture rtl of rsa_core_control is
     signal modexp_in_valid, modexp_out_valid : std_logic;
 
     signal in_reg_en, m_reg_en, last_reg_en, out_reg_en : std_logic;
+
+    type state_type is (
+        rdy, -- "wait" is a keyword and cannot be used (ref state_diagrams.xlsx)
+        modmul, save_modmul,
+        modexp_in, modexp_out,
+        result_out -- "out" is a keyword and cannot be used (ref state_diagrams.xlsx)
+    ) ;
 begin
 
 end architecture;
