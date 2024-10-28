@@ -43,6 +43,7 @@ architecture rtl of rsa_core_control is
 
 
 begin
+    -- TODO: verify sensitifity list
     main_process : process (clk, reset, state) is
         begin
             state_next <= rdy;
@@ -133,6 +134,19 @@ begin
 
             end case;
         end process main_process;
+
+        -- TODO: verify sensitifity list
+    last_message_control : process (clk) is
+        begin
+            if (rising_edge(clk)) then
+                if (msgin_last = '1') then
+                    msgout_last <= '1';
+                else
+                    msgout_last <= '0';
+                end if ;
+            end if ;
+
+    end process last_message_control;
 
 
 

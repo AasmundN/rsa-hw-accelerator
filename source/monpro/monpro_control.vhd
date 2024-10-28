@@ -49,7 +49,7 @@ architecture rtl of monpro_control is
 
 begin
 
-  main_state_process : process (state) is
+  main_state_process : process (clk, state) is
   begin
 
     out_reg_en         <= '0';
@@ -194,7 +194,8 @@ begin
 
   update_state : process (reset, clk) is
   begin
-
+  -- TODO: verify sensitifity list
+  -- TODO: reset is internal. if "enable" is low, then reset instead.
     if (reset = '0') then
       state <= idle;
     elsif (rising_edge(clk)) then
