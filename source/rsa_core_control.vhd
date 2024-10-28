@@ -135,6 +135,15 @@ begin
             end case;
         end process main_process;
 
+    update_state : process (clk, reset) is
+        begin
+            if (reset = '0') then
+                state <= rdy;
+            elsif (rising_edge(clk)) then
+                state <= state_next;
+            end if ;
+    end process update_state;
+
         -- TODO: verify sensitifity list
     last_message_control : process (clk) is
         begin
@@ -147,8 +156,4 @@ begin
             end if ;
 
     end process last_message_control;
-
-
-
-
 end architecture;
