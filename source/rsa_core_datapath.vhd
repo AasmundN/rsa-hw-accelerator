@@ -6,8 +6,7 @@ library ieee;
 entity rsa_core_datapath is
     port (
         clk   : in std_logic;
-        reset : in std_logic;
-        
+        reset : in std_logic
     );
 end entity;
 
