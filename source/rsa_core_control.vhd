@@ -42,7 +42,7 @@ architecture rtl of rsa_core_control is
   signal in_reg_en   : std_logic;
   signal m_reg_en    : std_logic;
   signal last_reg_en : std_logic;
-  signal out_reg_en  : std_logic;
+  signal out_reg_enable  : std_logic;
 
 begin
 
@@ -61,7 +61,7 @@ begin
     in_reg_en   <= '0';
     m_reg_en    <= '0';
     last_reg_en <= '0';
-    out_reg_en  <= '0';
+    out_reg_enable  <= '0';
 
     -- TODO: Reset = 0 -> state = ready
     case(state) is
@@ -110,7 +110,7 @@ begin
 
       when modexp_out =>
 
-        out_reg_en       <= '1';
+        out_reg_enable       <= '1';
         modexp_out_ready <= '1';
 
         if (modexp_out_valid = '0') then
@@ -143,7 +143,7 @@ begin
         in_reg_en   <= '0';
         m_reg_en    <= '0';
         last_reg_en <= '0';
-        out_reg_en  <= '0';
+        out_reg_enable  <= '0';
 
     end case;
 

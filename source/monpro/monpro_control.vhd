@@ -20,15 +20,15 @@ entity monpro_control is
     is_odd        : in    std_logic;
 
     -- Register control
-    out_reg_en         : out   std_logic;
-    shift_reg_en       : out   std_logic;
-    shift_reg_shift_en : out   std_logic;
+    out_reg_enable         : out   std_logic;
+    shift_reg_enable       : out   std_logic;
+    shift_reg_shift_enable : out   std_logic;
 
     -- Data control
     out_reg_valid : out   std_logic;
-    opcode        : out   alu_opcode_t;
-    alu_a_sel     : out   std_logic;
-    alu_b_sel     : out   std_logic
+    alu_opcode        : out   alu_opcode_t;
+    alu_a_select     : out   std_logic;
+    alu_b_select     : out   std_logic
   );
 end entity monpro_control;
 
@@ -51,15 +51,15 @@ begin
   main_state_process : process (clk, state) is
   begin
 
-    out_reg_en         <= '0';
-    shift_reg_en       <= '0';
-    shift_reg_shift_en <= '0';
+    out_reg_enable         <= '0';
+    shift_reg_enable       <= '0';
+    shift_reg_shift_enable <= '0';
     reset              <= '0';
 
     out_reg_valid  <= '0';
-    opcode         <= pass;
-    alu_a_sel      <= '0';
-    alu_b_sel      <= '0';
+    alu_opcode         <= pass;
+    alu_a_select      <= '0';
+    alu_b_select      <= '0';
     incr_i_counter <= '0';
 
     state_next <= idle;
@@ -69,7 +69,7 @@ begin
       when idle =>
 
         out_reg_valid      <= '0';
-        shift_reg_shift_en <= '0';
+        shift_reg_shift_enable <= '0';
 
         if (enable = '1') then
           state_next <= start;
@@ -79,7 +79,7 @@ begin
 
       when start =>
 
-        shift_reg_en <= '0';
+        shift_reg_enable <= '0';
         reset        <= '1';
 
         if (enable = '1') then
@@ -90,10 +90,10 @@ begin
 
       when add_b =>
 
-        opcode     <= add;
-        out_reg_en <= '1';
-        alu_a_sel  <= '0';                                                   -- TODO: create type enum
-        alu_b_sel  <= '1';                                                   -- TODO: create type enum
+        alu_opcode     <= add;
+        out_reg_enable <= '1';
+        alu_a_select  <= '0';                                                   -- TODO: create type enum
+        alu_b_select  <= '1';                                                   -- TODO: create type enum
 
         if (is_odd = '1' and enable = '1') then
           state_next <= add_n;
@@ -103,10 +103,10 @@ begin
 
       when add_n =>
 
-        opcode     <= add;
-        out_reg_en <= '1';
-        alu_a_sel  <= '0';                                                   -- TODO: create type enum
-        alu_b_sel  <= '0';                                                   -- TODO: create type enum
+        alu_opcode     <= add;
+        out_reg_enable <= '1';
+        alu_a_select  <= '0';                                                   -- TODO: create type enum
+        alu_b_select  <= '0';                                                   -- TODO: create type enum
 
         if (enable = '1') then
           state_next <= shift;
@@ -116,10 +116,10 @@ begin
 
       when shift =>
 
-        opcode             <= pass;
-        out_reg_en         <= '1';
-        shift_reg_shift_en <= '1';
-        alu_a_sel          <= '1';
+        alu_opcode             <= pass;
+        out_reg_enable         <= '1';
+        shift_reg_shift_enable <= '1';
+        alu_a_select          <= '1';
         incr_i_counter     <= '1';
 
         if (enable = '1') then
@@ -134,11 +134,11 @@ begin
 
       when comp =>
 
-        opcode             <= sub;
-        out_reg_en         <= '0';
-        shift_reg_shift_en <= '0';
-        alu_a_sel          <= '0';
-        alu_b_sel          <= '0';                                           -- TODO: verify this. Create enum.
+        alu_opcode             <= sub;
+        out_reg_enable         <= '0';
+        shift_reg_shift_enable <= '0';
+        alu_a_select          <= '0';
+        alu_b_select          <= '0';                                           -- TODO: verify this. Create enum.
 
         if (enable = '1') then
           if (alu_less_than = '1') then
@@ -152,10 +152,10 @@ begin
 
       when save =>
 
-        opcode     <= sub;
-        out_reg_en <= '1';
-        alu_a_sel  <= '0';
-        alu_b_sel  <= '0';
+        alu_opcode     <= sub;
+        out_reg_enable <= '1';
+        alu_a_select  <= '0';
+        alu_b_select  <= '0';
 
         if (enable = '1') then
           state_next <= valid;
@@ -165,7 +165,7 @@ begin
 
       when valid =>
 
-        out_reg_en    <= '0';
+        out_reg_enable    <= '0';
         out_reg_valid <= '1';
 
         if (enable = '1') then
@@ -176,15 +176,15 @@ begin
 
       when others =>
 
-        out_reg_en         <= '0';
-        shift_reg_en       <= '0';
-        shift_reg_shift_en <= '0';
+        out_reg_enable         <= '0';
+        shift_reg_enable       <= '0';
+        shift_reg_shift_enable <= '0';
         reset              <= '0';
 
         out_reg_valid  <= '0';
-        opcode         <= pass;
-        alu_a_sel      <= '0';
-        alu_b_sel      <= '0';
+        alu_opcode         <= pass;
+        alu_a_select      <= '0';
+        alu_b_select      <= '0';
         incr_i_counter <= '0';
 
         state_next <= idle;
