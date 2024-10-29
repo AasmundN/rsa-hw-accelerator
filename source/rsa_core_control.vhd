@@ -68,7 +68,6 @@ begin
       when waiting =>
 
         msgin_ready  <= '1';
-        msgout_valid <= '0';
         in_reg_enable    <= '1';
         last_reg_enable  <= '1';
 
@@ -80,9 +79,6 @@ begin
 
       when modmul =>
 
-        msgin_ready   <= '0';
-        in_reg_enable     <= '0';
-        last_reg_enable   <= '0';
         modmul_enable <= '1';
 
         if (modmul_valid = '0') then
@@ -94,7 +90,6 @@ begin
       when save_modmul =>
 
         m_reg_enable      <= '1';
-        modmul_enable <= '0';
         state_next    <= modexp_in;
 
       when modexp_in =>
@@ -134,11 +129,11 @@ begin
 
         msgin_ready  <= '0';
         msgout_valid <= '0';
-
+    
         modmul_enable    <= '0';
         modexp_out_ready <= '0';
         modexp_in_valid  <= '0';
-
+    
         in_reg_enable      <= '0';
         m_reg_enable       <= '0';
         last_reg_enable    <= '0';
