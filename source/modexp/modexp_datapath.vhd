@@ -167,7 +167,7 @@ begin
 
   begin
 
-    for i in operand_e'range loop
+    for i in operand_e'reverse_range loop
 
       if (operand_e(i) = '1') then
         temp_output(i) := '1';
