@@ -36,8 +36,8 @@ end entity modmul_datapath;
 architecture rtl of modmul_datapath is
 
   -- internal registers
-  signal a_reg_r             : std_logic_vector(bit_width - 1 downto 0);
-  signal a_last_reg_r        : std_logic_vector(bit_width - 1 downto 0);
+  signal a_reg_r              : std_logic_vector(bit_width - 1 downto 0);
+  signal a_last_reg_r         : std_logic_vector(bit_width - 1 downto 0);
   signal out_reg_r            : std_logic_vector(bit_width - 1 downto 0);
   signal out_reg_left_shifted : std_logic_vector(bit_width - 1 downto 0); -- register on input-side A of alu
 
@@ -53,11 +53,10 @@ architecture rtl of modmul_datapath is
 
 begin
 
-  process (all)
+  process (all) is
   begin
-    
-  end process;
 
+  end process;
 
 end architecture rtl;
 

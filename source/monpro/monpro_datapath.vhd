@@ -93,7 +93,18 @@ begin
     );
 
   -- shiftreg_r(0) and operand_b are different sizes, might be sussy
-  and_b_a <= operand_b and shift_reg_r(0);
+  bitwise_masker_b_a : entity work.bitwise_masker(rtl)
+    generic map (
+      bit_width => bit_width
+    )
+    port map (
+      signal_in       => operand_b,
+      set_mask_values => shift_reg_r(0),
+
+      signal_out => and_b_a
+    );
+
+  -- and_b_a <= operand_b and shift_reg_r(0);
 
   alu_b_mux : entity work.mux_2to1(rtl)
     generic map (
