@@ -64,7 +64,7 @@ begin
 
     state_next <= idle;
 
-    case(state) is
+    case (state) is
 
       when idle =>
 

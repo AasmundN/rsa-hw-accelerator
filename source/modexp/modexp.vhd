@@ -86,4 +86,24 @@ begin
       monpro_output_valid    => monpro_output_valid
     );
 
+  control : entity work.modexp_control(rtl)
+    port map (
+      clk                    => clk,
+      reset                  => reset,
+      in_valid               => in_valid,
+      in_ready               => in_ready,
+      out_ready              => out_ready,
+      out_valid              => out_valid,
+      out_reg_enable         => out_reg_enable,
+      shift_reg_enable       => shift_reg_enable,
+      shift_reg_shift_enable => shift_reg_shift_enable,
+      m_reg_enable           => m_reg_enable,
+      e_current_bit          => e_current_bit,
+      e_bit_is_last          => e_bit_is_last,
+      out_reg_in_select      => out_reg_in_select,
+      monpro_b_select        => monpro_b_select,
+      monpro_enable          => monpro_enable,
+      monpro_output_valid    => monpro_output_valid
+    );
+
 end architecture rtl;
