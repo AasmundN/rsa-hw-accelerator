@@ -47,26 +47,26 @@ entity rsa_core is
 end entity rsa_core;
 
 architecture rtl of rsa_core is
-  signal modmul_valid : std_logic;
-  signal modexp_in_ready : std_logic;
+
+  signal modmul_valid     : std_logic;
+  signal modexp_in_ready  : std_logic;
   signal modexp_out_valid : std_logic;
 
-
 begin
-  control : entity work.rsa_core_control(rtl)
-  port map (
-    clk => clk,
-    reset => reset_n,
-    msgin_valid => msgin_valid,
-    msgin_ready => msgin_ready,
-    msgin_last => msgin_last,
-    msgout_last => msgout_last,
-    msgout_ready => msgout_ready,
-    msgout_valid => msgout_valid,
-    modmul_valid => modmul_valid,
-    modexp_in_ready => modexp_in_ready,
-    modexp_out_valid => modexp_out_valid
-  );
 
+  control : entity work.rsa_core_control(rtl)
+    port map (
+      clk              => clk,
+      reset            => reset_n,
+      msgin_valid      => msgin_valid,
+      msgin_ready      => msgin_ready,
+      msgin_last       => msgin_last,
+      msgout_last      => msgout_last,
+      msgout_ready     => msgout_ready,
+      msgout_valid     => msgout_valid,
+      modmul_valid     => modmul_valid,
+      modexp_in_ready  => modexp_in_ready,
+      modexp_out_valid => modexp_out_valid
+    );
 
 end architecture rtl;
