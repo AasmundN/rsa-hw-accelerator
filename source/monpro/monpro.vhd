@@ -46,8 +46,8 @@ architecture rtl of monpro is
 
   -- ALU control signals
   signal alu_opcode    : alu_opcode_t;
-  signal alu_a_select     : std_logic;
-  signal alu_b_select     : std_logic;
+  signal alu_a_select  : std_logic;
+  signal alu_b_select  : std_logic;
   signal alu_less_than : std_logic;
 
   -- Internal register control
@@ -83,17 +83,18 @@ begin
 
   control : entity work.monpro_control(rtl)
     port map (
-      clk                => clk,
-      enable             => enable,
-      alu_less_than      => alu_less_than,
-      is_odd             => is_odd,
+      clk                    => clk,
+      reset                  => reset,
+      enable                 => enable,
+      alu_less_than          => alu_less_than,
+      is_odd                 => is_odd,
       out_reg_enable         => out_reg_enable,
       shift_reg_enable       => shift_reg_enable,
       shift_reg_shift_enable => shift_reg_shift_enable,
-      out_reg_valid      => output_valid,
+      out_reg_valid          => output_valid,
       alu_opcode             => alu_opcode,
-      alu_a_select          => alu_a_select,
-      alu_b_select          => alu_b_select
+      alu_a_select           => alu_a_select,
+      alu_b_select           => alu_b_select
     );
 
 end architecture rtl;

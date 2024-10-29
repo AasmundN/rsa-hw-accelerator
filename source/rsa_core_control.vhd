@@ -27,7 +27,7 @@ end entity rsa_core_control;
 architecture rtl of rsa_core_control is
 
   type state_type is (
-    waiting,       -- "wait" is a keyword and cannot be used (ref state_diagrams.xlsx)
+    waiting,   -- "wait" is a keyword and cannot be used (ref state_diagrams.xlsx)
     modmul, save_modmul,
     modexp_in, modexp_out,
     result_out -- "out" is a keyword and cannot be used (ref state_diagrams.xlsx)
@@ -39,10 +39,10 @@ architecture rtl of rsa_core_control is
   signal modexp_out_ready : std_logic;
   signal modexp_in_valid  : std_logic;
 
-  signal in_reg_en   : std_logic;
-  signal m_reg_en    : std_logic;
-  signal last_reg_en : std_logic;
-  signal out_reg_enable  : std_logic;
+  signal in_reg_en      : std_logic;
+  signal m_reg_en       : std_logic;
+  signal last_reg_en    : std_logic;
+  signal out_reg_enable : std_logic;
 
 begin
 
@@ -58,10 +58,10 @@ begin
     modexp_out_ready <= '0';
     modexp_in_valid  <= '0';
 
-    in_reg_en   <= '0';
-    m_reg_en    <= '0';
-    last_reg_en <= '0';
-    out_reg_enable  <= '0';
+    in_reg_en      <= '0';
+    m_reg_en       <= '0';
+    last_reg_en    <= '0';
+    out_reg_enable <= '0';
 
     -- TODO: Reset = 0 -> state = ready
     case(state) is
@@ -110,7 +110,7 @@ begin
 
       when modexp_out =>
 
-        out_reg_enable       <= '1';
+        out_reg_enable   <= '1';
         modexp_out_ready <= '1';
 
         if (modexp_out_valid = '0') then
@@ -140,10 +140,10 @@ begin
         modexp_out_ready <= '0';
         modexp_in_valid  <= '0';
 
-        in_reg_en   <= '0';
-        m_reg_en    <= '0';
-        last_reg_en <= '0';
-        out_reg_enable  <= '0';
+        in_reg_en      <= '0';
+        m_reg_en       <= '0';
+        last_reg_en    <= '0';
+        out_reg_enable <= '0';
 
     end case;
 
@@ -159,7 +159,6 @@ begin
     end if;
 
   end process update_state;
-
 
   last_message_control : process (clk) is
   begin

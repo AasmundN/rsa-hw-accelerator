@@ -10,7 +10,8 @@ entity monpro_control is
     -- TODO: MISSING INTERNAL COUNTER. MOVE THE EXISTING TO I_COUNTER TO THE ARCHITECTURE.
 
     -- Clock
-    clk : in    std_logic;
+    clk   : in    std_logic;
+    reset : out   std_logic;
 
     -- Entity enable
     enable : in    std_logic;
@@ -26,9 +27,9 @@ entity monpro_control is
 
     -- Data control
     out_reg_valid : out   std_logic;
-    alu_opcode        : out   alu_opcode_t;
-    alu_a_select     : out   std_logic;
-    alu_b_select     : out   std_logic
+    alu_opcode    : out   alu_opcode_t;
+    alu_a_select  : out   std_logic;
+    alu_b_select  : out   std_logic
   );
 end entity monpro_control;
 
@@ -42,7 +43,6 @@ architecture rtl of monpro_control is
   );
 
   signal state, state_next : state_type;
-  signal reset             : std_logic;                    -- Internal reset for registers
   signal i_counter         : std_logic_vector(7 downto 0); -- Used to store loop counter
   signal incr_i_counter    : std_logic;
 
@@ -54,12 +54,12 @@ begin
     out_reg_enable         <= '0';
     shift_reg_enable       <= '0';
     shift_reg_shift_enable <= '0';
-    reset              <= '0';
+    reset                  <= '0';
 
     out_reg_valid  <= '0';
-    alu_opcode         <= pass;
-    alu_a_select      <= '0';
-    alu_b_select      <= '0';
+    alu_opcode     <= pass;
+    alu_a_select   <= '0';
+    alu_b_select   <= '0';
     incr_i_counter <= '0';
 
     state_next <= idle;
@@ -68,7 +68,7 @@ begin
 
       when idle =>
 
-        out_reg_valid      <= '0';
+        out_reg_valid          <= '0';
         shift_reg_shift_enable <= '0';
 
         if (enable = '1') then
@@ -80,7 +80,7 @@ begin
       when start =>
 
         shift_reg_enable <= '0';
-        reset        <= '1';
+        reset            <= '1';
 
         if (enable = '1') then
           state_next <= add_b;
@@ -92,8 +92,8 @@ begin
 
         alu_opcode     <= add;
         out_reg_enable <= '1';
-        alu_a_select  <= '0';                                                   -- TODO: create type enum
-        alu_b_select  <= '1';                                                   -- TODO: create type enum
+        alu_a_select   <= '0';                                                   -- TODO: create type enum
+        alu_b_select   <= '1';                                                   -- TODO: create type enum
 
         if (is_odd = '1' and enable = '1') then
           state_next <= add_n;
@@ -105,8 +105,8 @@ begin
 
         alu_opcode     <= add;
         out_reg_enable <= '1';
-        alu_a_select  <= '0';                                                   -- TODO: create type enum
-        alu_b_select  <= '0';                                                   -- TODO: create type enum
+        alu_a_select   <= '0';                                                   -- TODO: create type enum
+        alu_b_select   <= '0';                                                   -- TODO: create type enum
 
         if (enable = '1') then
           state_next <= shift;
@@ -119,8 +119,8 @@ begin
         alu_opcode             <= pass;
         out_reg_enable         <= '1';
         shift_reg_shift_enable <= '1';
-        alu_a_select          <= '1';
-        incr_i_counter     <= '1';
+        alu_a_select           <= '1';
+        incr_i_counter         <= '1';
 
         if (enable = '1') then
           if (to_integer(unsigned(i_counter)) < 255) then
@@ -137,8 +137,8 @@ begin
         alu_opcode             <= sub;
         out_reg_enable         <= '0';
         shift_reg_shift_enable <= '0';
-        alu_a_select          <= '0';
-        alu_b_select          <= '0';                                           -- TODO: verify this. Create enum.
+        alu_a_select           <= '0';
+        alu_b_select           <= '0';                                           -- TODO: verify this. Create enum.
 
         if (enable = '1') then
           if (alu_less_than = '1') then
@@ -154,8 +154,8 @@ begin
 
         alu_opcode     <= sub;
         out_reg_enable <= '1';
-        alu_a_select  <= '0';
-        alu_b_select  <= '0';
+        alu_a_select   <= '0';
+        alu_b_select   <= '0';
 
         if (enable = '1') then
           state_next <= valid;
@@ -165,8 +165,8 @@ begin
 
       when valid =>
 
-        out_reg_enable    <= '0';
-        out_reg_valid <= '1';
+        out_reg_enable <= '0';
+        out_reg_valid  <= '1';
 
         if (enable = '1') then
           state_next <= valid;
@@ -179,12 +179,12 @@ begin
         out_reg_enable         <= '0';
         shift_reg_enable       <= '0';
         shift_reg_shift_enable <= '0';
-        reset              <= '0';
+        reset                  <= '0';
 
         out_reg_valid  <= '0';
-        alu_opcode         <= pass;
-        alu_a_select      <= '0';
-        alu_b_select      <= '0';
+        alu_opcode     <= pass;
+        alu_a_select   <= '0';
+        alu_b_select   <= '0';
         incr_i_counter <= '0';
 
         state_next <= idle;
