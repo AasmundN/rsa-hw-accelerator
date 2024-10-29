@@ -17,33 +17,34 @@ entity rsa_core_datapath is
     x_bar             : in    std_logic_vector(bit_width - 1 downto 0);
     montgomery_factor : in    std_logic_vector(bit_width - 1 downto 0); -- Place holder name (r-value)
 
-    msgin_data    : in    std_logic_vector(bit_width - 1 downto 0);
-    msgout_data   : out    std_logic_vector(bit_width - 1 downto 0);
-    msgout_last : in std_logic;
+    msgin_data  : in    std_logic_vector(bit_width - 1 downto 0);
+    msgout_data : out   std_logic_vector(bit_width - 1 downto 0);
 
+    msgin_last : in    std_logic;
+    msgout_last : out  std_logic;
 
-    modmul_enable : out   std_logic;
+    modmul_enable : in   std_logic;
     modmul_valid  : out   std_logic;
 
-    modexp_in_ready : in    std_logic;
-    modexp_in_valid : out   std_logic;
+    modexp_in_ready : out    std_logic;
+    modexp_in_valid : in   std_logic;
 
-    modexp_out_ready : out   std_logic;
-    modexp_out_valid : in    std_logic;
+    modexp_out_ready : in   std_logic;
+    modexp_out_valid : out    std_logic;
 
     is_msg_last_latch_enable : in    std_logic;
     in_reg_enable            : in    std_logic;
     m_reg_enable             : in    std_logic;
-    out_reg_enable            : in    std_logic
+    out_reg_enable           : in    std_logic
   );
 end entity rsa_core_datapath;
 
 architecture rtl of rsa_core_datapath is
 
   -- Internal registers
-  signal in_reg_r  : std_logic_vector(bit_width - 1 downto 0);
-  signal out_reg_r : std_logic_vector(bit_width - 1 downto 0);
-  signal m_reg_r   : std_logic_vector(bit_width - 1 downto 0);
+  signal in_reg_r          : std_logic_vector(bit_width - 1 downto 0);
+  signal out_reg_r         : std_logic_vector(bit_width - 1 downto 0);
+  signal m_reg_r           : std_logic_vector(bit_width - 1 downto 0);
   signal is_msg_last_latch : std_logic;
 
   -- Intermediary signals
@@ -52,6 +53,7 @@ architecture rtl of rsa_core_datapath is
 begin
 
   msgout_data <= out_reg_r;
+  msgout_last <= is_msg_last_latch;
 
   modmul : entity work.modmul(rtl)
     generic map (
@@ -87,6 +89,7 @@ begin
 
   in_reg : process (clk, reset, in_reg_enable, msgin_data) is
   begin
+
     if (rising_edge(clk)) then
       if (reset = '1') then
         in_reg_r <= (others => '0');
@@ -94,38 +97,46 @@ begin
         in_reg_r <= msgin_data;
       end if;
     end if;
+
   end process in_reg;
 
   m_reg : process (clk, reset, m_reg_enable, modmul_out) is
-    begin
-      if (rising_edge(clk)) then
-        if (reset = '1') then
-          m_reg_r <= (others => '0');
-        elsif (in_reg_enable = '1') then
-          m_reg_r <= modmul_out;
-        end if;
-      end if;
-    end process m_reg;
+  begin
 
-    out_reg : process (clk, reset, out_reg_enable, modexp_out) is
-      begin
-        if (rising_edge(clk)) then
-          if (reset = '1') then
-            out_reg_r <= (others => '0');
-          elsif (in_reg_enable = '1') then
-            out_reg_r <= modexp_out;
-          end if;
-        end if;
-      end process out_reg;
-
-    is_last_msg_latch : process (clk, reset, is_msg_last_latch_enable) is
-    begin
-      if (rising_edge(clk)) then
-        if (reset = '1') then
-          is_msg_last_latch <= '0';
-        elsif (is_msg_last_latch_enable = '1') then
-          is_msg_last_latch <= msgout_last;
-        end if;
+    if (rising_edge(clk)) then
+      if (reset = '1') then
+        m_reg_r <= (others => '0');
+      elsif (in_reg_enable = '1') then
+        m_reg_r <= modmul_out;
       end if;
-    end process is_last_msg_latch;
+    end if;
+
+  end process m_reg;
+
+  out_reg : process (clk, reset, out_reg_enable, modexp_out) is
+  begin
+
+    if (rising_edge(clk)) then
+      if (reset = '1') then
+        out_reg_r <= (others => '0');
+      elsif (in_reg_enable = '1') then
+        out_reg_r <= modexp_out;
+      end if;
+    end if;
+
+  end process out_reg;
+
+  is_last_msg_latch : process (clk, reset, is_msg_last_latch_enable) is
+  begin
+
+    if (rising_edge(clk)) then
+      if (reset = '1') then
+        is_msg_last_latch <= '0';
+      elsif (is_msg_last_latch_enable = '1') then
+        is_msg_last_latch <= msgin_last;
+      end if;
+    end if;
+
+  end process is_last_msg_latch;
+
 end architecture rtl;
