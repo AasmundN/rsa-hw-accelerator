@@ -26,8 +26,8 @@ entity rsa_core_datapath is
     modmul_enable : in    std_logic;
     modmul_valid  : out   std_logic;
 
-    modexp_in_ready : out   std_logic;
-    modexp_in_valid : in    std_logic;
+    modexp_in_ready  : out   std_logic;
+    modexp_in_valid  : in    std_logic;
     modexp_out_ready : in    std_logic;
     modexp_out_valid : out   std_logic;
 
