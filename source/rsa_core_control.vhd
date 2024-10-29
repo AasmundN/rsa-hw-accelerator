@@ -149,10 +149,12 @@ begin
   update_state : process (clk, reset) is
   begin
 
-    if (reset = '0') then
-      state <= waiting;
-    elsif (rising_edge(clk)) then
-      state <= state_next;
+    if (rising_edge(clk)) then
+      if (reset = '1') then
+        state <= waiting;
+      else
+        state <= state_next;
+      end if;
     end if;
 
   end process update_state;
