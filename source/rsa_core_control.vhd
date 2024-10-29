@@ -57,6 +57,7 @@ begin
     msgout_valid <= '0';
 
     modmul_enable    <= '0';
+    modmul_enable    <= '0';
     modexp_out_ready <= '0';
     modexp_in_valid  <= '0';
 
@@ -133,6 +134,7 @@ begin
         msgin_ready  <= '0';
         msgout_valid <= '0';
 
+        modmul_enable    <= '0';
         modmul_enable    <= '0';
         modexp_out_ready <= '0';
         modexp_in_valid  <= '0';
