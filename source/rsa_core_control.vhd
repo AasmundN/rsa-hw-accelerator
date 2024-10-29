@@ -12,15 +12,15 @@ entity rsa_core_control is
 
     msgin_ready : out   std_logic;
     msgin_valid : in    std_logic;
-    msgin_last  : in    std_logic;
 
     msgout_ready : in    std_logic;
     msgout_valid : out   std_logic;
-    msgout_last  : out   std_logic;
 
     modmul_valid     : in    std_logic;
     modexp_in_ready  : in    std_logic;
-    modexp_out_valid : in    std_logic
+    modexp_out_valid : in    std_logic;
+
+    last_reg_en : out   std_logic
   );
 end entity rsa_core_control;
 
@@ -41,7 +41,6 @@ architecture rtl of rsa_core_control is
 
   signal in_reg_en      : std_logic;
   signal m_reg_en       : std_logic;
-  signal last_reg_en    : std_logic;
   signal out_reg_enable : std_logic;
 
 begin
@@ -159,18 +158,5 @@ begin
     end if;
 
   end process update_state;
-
-  last_message_control : process (clk) is
-  begin
-
-    if (rising_edge(clk)) then
-      if (msgin_last = '1') then
-        msgout_last <= '1';
-      else
-        msgout_last <= '0';
-      end if;
-    end if;
-
-  end process last_message_control;
 
 end architecture rtl;

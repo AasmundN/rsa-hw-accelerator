@@ -60,8 +60,6 @@ begin
       reset            => reset_n,
       msgin_valid      => msgin_valid,
       msgin_ready      => msgin_ready,
-      msgin_last       => msgin_last,
-      msgout_last      => msgout_last,
       msgout_ready     => msgout_ready,
       msgout_valid     => msgout_valid,
       modmul_valid     => modmul_valid,
