@@ -104,8 +104,6 @@ begin
       signal_out => and_b_a
     );
 
-  -- and_b_a <= operand_b and shift_reg_r(0);
-
   alu_b_mux : entity work.mux_2to1(rtl)
     generic map (
       bit_width => bit_width + 1
