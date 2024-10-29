@@ -38,8 +38,8 @@ architecture rtl of modmul_datapath is
   -- internal registers
   signal a_reg_r             : std_logic_vector(bit_width - 1 downto 0);
   signal a_last_reg_r        : std_logic_vector(bit_width - 1 downto 0);
-  signal outreg_r            : std_logic_vector(bit_width - 1 downto 0);
-  signal outreg_left_shifted : std_logic_vector(bit_width - 1 downto 0); -- register on input-side A of alu
+  signal out_reg_r            : std_logic_vector(bit_width - 1 downto 0);
+  signal out_reg_left_shifted : std_logic_vector(bit_width - 1 downto 0); -- register on input-side A of alu
 
   signal bit_scanner_out : std_logic_vector(bit_width - 1 downto 0);
 
