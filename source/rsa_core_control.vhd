@@ -7,7 +7,6 @@ library ieee;
 
 entity rsa_core_control is
   port (
-
     -- Clock and reset
     clk   : in    std_logic;
     reset : in    std_logic;
@@ -30,10 +29,10 @@ entity rsa_core_control is
     modexp_out_valid : in    std_logic;
 
     -- Register enable signals
-    last_reg_enable : out   std_logic;
-    in_reg_enable   : out   std_logic;
-    m_reg_enable    : out   std_logic;
-    out_reg_enable  : out   std_logic
+    is_msg_last_latch_enable : out   std_logic;
+    in_reg_enable            : out   std_logic;
+    m_reg_enable             : out   std_logic;
+    out_reg_enable           : out   std_logic
   );
 end entity rsa_core_control;
 
@@ -62,19 +61,19 @@ begin
     modexp_out_ready <= '0';
     modexp_in_valid  <= '0';
 
-    in_reg_enable   <= '0';
-    m_reg_enable    <= '0';
-    last_reg_enable <= '0';
-    out_reg_enable  <= '0';
+    in_reg_enable            <= '0';
+    m_reg_enable             <= '0';
+    is_msg_last_latch_enable <= '0';
+    out_reg_enable           <= '0';
 
     -- TODO: Reset = 0 -> state = ready
     case(state) is
 
       when waiting =>
 
-        msgin_ready     <= '1';
-        in_reg_enable   <= '1';
-        last_reg_enable <= '1';
+        msgin_ready              <= '1';
+        in_reg_enable            <= '1';
+        is_msg_last_latch_enable <= '1';
 
         if (msgin_valid = '0') then
           state_next <= waiting;
@@ -139,10 +138,10 @@ begin
         modexp_out_ready <= '0';
         modexp_in_valid  <= '0';
 
-        in_reg_enable   <= '0';
-        m_reg_enable    <= '0';
-        last_reg_enable <= '0';
-        out_reg_enable  <= '0';
+        in_reg_enable            <= '0';
+        m_reg_enable             <= '0';
+        is_msg_last_latch_enable <= '0';
+        out_reg_enable           <= '0';
 
     end case;
 
