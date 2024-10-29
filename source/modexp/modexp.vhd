@@ -42,6 +42,48 @@ end entity modexp;
 
 architecture rtl of modexp is
 
+  -- Internal register control
+  signal out_reg_enable         : std_logic;
+  signal shift_reg_enable       : std_logic;
+  signal shift_reg_shift_enable : std_logic;
+  signal m_reg_enable           : std_logic;
+
+  -- e loop signals
+  signal current_e_bit : std_logic;
+  signal is_e_bit_last : std_logic;
+
+  -- MUX control
+  signal out_reg_in_select : std_logic;
+  signal monpro_b_select   : std_logic_vector(1 downto 0);
+
+  -- Monpro control
+  signal monpro_enable       : std_logic;
+  signal monpro_output_valid : std_logic;
+
 begin
+
+  datapath : entity work.modexp_datapath(rtl)
+    generic map (
+      bit_width => bit_width
+    )
+    port map (
+      clk                    => clk,
+      reset                  => reset,
+      modulus                => modulus,
+      operand_m_bar          => operand_m_bar,
+      operand_x_bar          => operand_x_bar,
+      operand_e              => operand_e,
+      result                 => result,
+      out_reg_enable         => out_reg_enable,
+      shift_reg_enable       => shift_reg_enable,
+      shift_reg_shift_enable => shift_reg_shift_enable,
+      m_reg_enable           => m_reg_enable,
+      current_e_bit          => current_e_bit,
+      is_e_bit_last          => is_e_bit_last,
+      out_reg_in_select      => out_reg_in_select,
+      monpro_b_select        => monpro_b_select,
+      monpro_enable          => monpro_enable,
+      monpro_output_valid    => monpro_output_valid
+    );
 
 end architecture rtl;
