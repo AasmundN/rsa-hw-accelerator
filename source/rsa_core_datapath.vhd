@@ -20,17 +20,16 @@ entity rsa_core_datapath is
     msgin_data  : in    std_logic_vector(bit_width - 1 downto 0);
     msgout_data : out   std_logic_vector(bit_width - 1 downto 0);
 
-    msgin_last : in    std_logic;
-    msgout_last : out  std_logic;
+    msgin_last  : in    std_logic;
+    msgout_last : out   std_logic;
 
-    modmul_enable : in   std_logic;
+    modmul_enable : in    std_logic;
     modmul_valid  : out   std_logic;
 
-    modexp_in_ready : out    std_logic;
-    modexp_in_valid : in   std_logic;
-
-    modexp_out_ready : in   std_logic;
-    modexp_out_valid : out    std_logic;
+    modexp_in_ready : out   std_logic;
+    modexp_in_valid : in    std_logic;
+    modexp_out_ready : in    std_logic;
+    modexp_out_valid : out   std_logic;
 
     is_msg_last_latch_enable : in    std_logic;
     in_reg_enable            : in    std_logic;

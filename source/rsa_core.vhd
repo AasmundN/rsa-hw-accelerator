@@ -57,7 +57,7 @@ architecture rtl of rsa_core is
   signal modexp_in_ready,  modexp_in_valid  : std_logic;
   signal modexp_out_ready, modexp_out_valid : std_logic;
 
-  -- Interntal register control signals
+  -- Internal register control signals
   signal is_msg_last_latch_enable : std_logic;
   signal in_reg_enable            : std_logic;
   signal m_reg_enable             : std_logic;
@@ -79,7 +79,7 @@ begin
       msgin_data               => msgin_data,
       msgout_data              => msgout_data,
       msgin_last               => msgin_last,
-      msgout_last => msgout_last,
+      msgout_last              => msgout_last,
       modmul_enable            => modmul_enable,
       modmul_valid             => modmul_valid,
       modexp_in_ready          => modexp_in_ready,
