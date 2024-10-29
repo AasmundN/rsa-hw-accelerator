@@ -33,10 +33,10 @@ entity modexp_datapath is
     -----------------------------------------------------------------------------
     -- Internal register control
     -----------------------------------------------------------------------------
-    outreg_enable         : in    std_logic;
-    shiftreg_enable       : in    std_logic;
-    shiftreg_shift_enable : in    std_logic;
-    mreg_enable           : in    std_logic;
+    out_reg_enable         : in    std_logic;
+    shift_reg_enable       : in    std_logic;
+    shift_reg_shift_enable : in    std_logic;
+    m_reg_enable           : in    std_logic;
 
     -----------------------------------------------------------------------------
     -- Serial output of shift registers
@@ -47,8 +47,8 @@ entity modexp_datapath is
     -----------------------------------------------------------------------------
     -- MUX selection
     -----------------------------------------------------------------------------
-    outreg_in_sel : in    std_logic;
-    monpro_b_sel  : in    std_logic_vector(1 downto 0);
+    out_reg_in_select : in    std_logic;
+    monpro_b_select   : in    std_logic_vector(1 downto 0);
 
     -----------------------------------------------------------------------------
     -- Monpro control signals
@@ -63,22 +63,22 @@ architecture rtl of modexp_datapath is
   -- Monpro intermediary signals
   signal monpro_out  : std_logic_vector(bit_width - 1 downto 0);
   signal monpro_b_in : std_logic_vector(bit_width - 1 downto 0);
-  signal outreg_in   : std_logic_vector(bit_width - 1 downto 0);
+  signal out_reg_in  : std_logic_vector(bit_width - 1 downto 0);
 
   -- Internal registers
-  signal outreg_r   : std_logic_vector(bit_width - 1 downto 0);
-  signal mreg_r     : std_logic_vector(bit_width - 1 downto 0);
-  signal ereg_r     : std_logic_vector(bit_width - 1 downto 0);
-  signal elastreg_r : std_logic_vector(bit_width - 1 downto 0);
+  signal out_reg_r    : std_logic_vector(bit_width - 1 downto 0);
+  signal m_reg_r      : std_logic_vector(bit_width - 1 downto 0);
+  signal e_reg_r      : std_logic_vector(bit_width - 1 downto 0);
+  signal e_last_reg_r : std_logic_vector(bit_width - 1 downto 0);
 
   -- Bit scanner
   signal bit_scanner_out : std_logic_vector(bit_width - 1 downto 0);
 
 begin
 
-  result        <= outreg_r;
-  current_e_bit <= ereg_r(0);
-  is_e_bit_last <= elastreg_r(0);
+  result        <= out_reg_r;
+  current_e_bit <= e_reg_r(0);
+  is_e_bit_last <= e_last_reg_r(0);
 
   monpro : entity work.monpro(rtl)
     generic map (
@@ -87,7 +87,7 @@ begin
     port map (
       clk          => clk,
       modulus      => modulus,
-      operand_a    => outreg_r,
+      operand_a    => out_reg_r,
       operand_b    => monpro_b_in,
       result       => monpro_out,
       enable       => monpro_enable,
@@ -101,8 +101,8 @@ begin
     port map (
       a0  => monpro_out,
       a1  => operand_x_bar,
-      b   => outreg_in,
-      sel => outreg_in_sel
+      b   => out_reg_in,
+      sel => out_reg_in_select
     );
 
   monpro_b_mux : entity work.mux_3to1(rtl)
@@ -110,52 +110,52 @@ begin
       bit_width => bit_width
     )
     port map (
-      a0  => outreg_r,
+      a0  => out_reg_r,
       a1  => (others => '1'),
-      a2  => mreg_r,
+      a2  => m_reg_r,
       b   => monpro_b_in,
-      sel => monpro_b_sel
+      sel => monpro_b_select
     );
 
-  outreg : process (clk, reset, outreg_enable, outreg_in) is
+  outreg : process (clk, reset, out_reg_enable, out_reg_in) is
   begin
 
     if rising_edge(clk) then
       if (reset = '1') then
-        outreg_r <= (others => '0');
-      elsif (outreg_enable = '1') then
-        outreg_r <= outreg_in;
+        out_reg_r <= (others => '0');
+      elsif (out_reg_enable = '1') then
+        out_reg_r <= out_reg_in;
       end if;
     end if;
 
   end process outreg;
 
-  mreg : process (clk, reset, mreg_enable, operand_m_bar) is
+  mreg : process (clk, reset, m_reg_enable, operand_m_bar) is
   begin
 
     if rising_edge(clk) then
       if (reset = '1') then
-        mreg_r <= (others => '0');
-      elsif (mreg_enable = '1') then
-        mreg_r <= operand_m_bar;
+        m_reg_r <= (others => '0');
+      elsif (m_reg_enable = '1') then
+        m_reg_r <= operand_m_bar;
       end if;
     end if;
 
   end process mreg;
 
-  shiftregs : process (clk, operand_e, ereg_r, elastreg_r, reset, shiftreg_enable, shiftreg_shift_enable) is
+  shiftregs : process (clk, operand_e, e_reg_r, e_last_reg_r, reset, shift_reg_enable, shift_reg_shift_enable) is
   begin
 
     if rising_edge(clk) then
       if (reset = '1') then
-        ereg_r     <= (others => '0');
-        elastreg_r <= (others => '0');
-      elsif (shiftreg_enable = '1') then
-        ereg_r     <= operand_e;
-        elastreg_r <= bit_scanner_out;
-      elsif (shiftreg_shift_enable) then
-        ereg_r     <= '0' & ereg_r(bit_width - 1 downto 1);
-        elastreg_r <= '0' & elastreg_r(bit_width - 1 downto 1);
+        e_reg_r      <= (others => '0');
+        e_last_reg_r <= (others => '0');
+      elsif (shift_reg_enable = '1') then
+        e_reg_r      <= operand_e;
+        e_last_reg_r <= bit_scanner_out;
+      elsif (shift_reg_shift_enable) then
+        e_reg_r      <= '0' & e_reg_r(bit_width - 1 downto 1);
+        e_last_reg_r <= '0' & e_last_reg_r(bit_width - 1 downto 1);
       end if;
     end if;
 
