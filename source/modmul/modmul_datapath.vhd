@@ -53,5 +53,11 @@ architecture rtl of modmul_datapath is
 
 begin
 
+  process (all)
+  begin
+    
+  end process;
+
+
 end architecture rtl;
 
