@@ -46,14 +46,14 @@ architecture rtl of monpro is
 
   -- ALU control signals
   signal alu_opcode    : alu_opcode_t;
-  signal alu_a_sel     : std_logic;
-  signal alu_b_sel     : std_logic;
+  signal alu_a_select  : std_logic;
+  signal alu_b_select  : std_logic;
   signal alu_less_than : std_logic;
 
   -- Internal register control
-  signal outreg_enable         : std_logic;
-  signal shiftreg_enable       : std_logic;
-  signal shiftreg_shift_enable : std_logic;
+  signal out_reg_enable         : std_logic;
+  signal shift_reg_enable       : std_logic;
+  signal shift_reg_shift_enable : std_logic;
 
   -- Used during execution of algorithm
   signal is_odd : std_logic;
@@ -65,35 +65,35 @@ begin
       bit_width => bit_width
     )
     port map (
-      clk                   => clk,
-      reset                 => reset,
-      alu_opcode            => alu_opcode,
-      alu_a_sel             => alu_a_sel,
-      alu_b_sel             => alu_b_sel,
-      alu_less_than         => alu_less_than,
-      outreg_enable         => outreg_enable,
-      shiftreg_enable       => shiftreg_enable,
-      shiftreg_shift_enable => shiftreg_shift_enable,
-      modulus               => modulus,
-      operand_a             => operand_a,
-      operand_b             => operand_b,
-      result                => result,
-      is_odd                => is_odd
+      clk                    => clk,
+      reset                  => reset,
+      alu_opcode             => alu_opcode,
+      alu_a_select           => alu_a_select,
+      alu_b_select           => alu_b_select,
+      alu_less_than          => alu_less_than,
+      out_reg_enable         => out_reg_enable,
+      shift_reg_enable       => shift_reg_enable,
+      shift_reg_shift_enable => shift_reg_shift_enable,
+      modulus                => modulus,
+      operand_a              => operand_a,
+      operand_b              => operand_b,
+      result                 => result,
+      is_odd                 => is_odd
     );
 
   control : entity work.monpro_control(rtl)
     port map (
-      clk                 => clk,
-      enable              => enable,
-      alu_less_than       => alu_less_than,
-      is_odd              => is_odd,
-      out_reg_en          => outreg_enable,
-      shift_reg_en        => shiftreg_enable,
-      shift_reg_shift_en  => shiftreg_shift_enable,
-      out_reg_valid       => output_valid,
-      opcode              => alu_opcode,
-      alu_a_sel           => alu_a_sel,
-      alu_b_sel           => alu_b_sel
+      clk                => clk,
+      enable             => enable,
+      alu_less_than      => alu_less_than,
+      is_odd             => is_odd,
+      out_reg_en         => out_reg_enable,
+      shift_reg_en       => shift_reg_enable,
+      shift_reg_shift_en => shift_reg_shift_enable,
+      out_reg_valid      => output_valid,
+      opcode             => alu_opcode,
+      alu_a_sel          => alu_a_select,
+      alu_b_sel          => alu_b_select
     );
 
 end architecture rtl;

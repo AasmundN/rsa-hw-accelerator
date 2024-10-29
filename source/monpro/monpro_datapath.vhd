@@ -20,16 +20,16 @@ entity monpro_datapath is
     -- ALU interface
     -----------------------------------------------------------------------------
     alu_opcode    : in    alu_opcode_t;
-    alu_a_sel     : in    std_logic;
-    alu_b_sel     : in    std_logic;
+    alu_a_select  : in    std_logic;
+    alu_b_select  : in    std_logic;
     alu_less_than : out   std_logic;
 
     -----------------------------------------------------------------------------
     -- Internal register control signals
     -----------------------------------------------------------------------------
-    outreg_enable         : in    std_logic;
-    shiftreg_enable       : in    std_logic;
-    shiftreg_shift_enable : in    std_logic;
+    out_reg_enable         : in    std_logic;
+    shift_reg_enable       : in    std_logic;
+    shift_reg_shift_enable : in    std_logic;
 
     -----------------------------------------------------------------------------
     -- Main inputs and outputs
@@ -53,11 +53,11 @@ architecture rtl of monpro_datapath is
 
   -- Internal registers
   -- Intermediary result has size bit_width+1
-  signal outreg_r   : std_logic_vector(bit_width downto 0);
-  signal shiftreg_r : std_logic_vector(bit_width - 1 downto 0);
+  signal out_reg_r   : std_logic_vector(bit_width downto 0);
+  signal shift_reg_r : std_logic_vector(bit_width - 1 downto 0);
 
   -- Output from bit shifter
-  signal outreg_right_shifted : std_logic_vector(bit_width downto 0);
+  signal out_reg_right_shifted : std_logic_vector(bit_width downto 0);
 
   -- ALU inputs and outputs
   signal alu_a      : std_logic_vector(bit_width downto 0);
@@ -66,8 +66,8 @@ architecture rtl of monpro_datapath is
 
 begin
 
-  result <= outreg_r(bit_width - 1 downto 0);
-  is_odd <= outreg_r(0) xor (operand_b(0) and shiftreg_r(0));
+  result <= out_reg_r(bit_width - 1 downto 0);
+  is_odd <= out_reg_r(0) xor (operand_b(0) and shift_reg_r(0));
 
   alu : entity work.alu(rtl)
     generic map (
@@ -86,14 +86,14 @@ begin
       bit_width => bit_width + 1
     )
     port map (
-      a0  => outreg_r,
-      a1  => outreg_right_shifted,
+      a0  => out_reg_r,
+      a1  => out_reg_right_shifted,
       b   => alu_a,
-      sel => alu_a_sel
+      sel => alu_a_select
     );
 
   -- shiftreg_r(0) and operand_b are different sizes, might be sussy
-  and_b_a <= operand_b and shiftreg_r(0);
+  and_b_a <= operand_b and shift_reg_r(0);
 
   alu_b_mux : entity work.mux_2to1(rtl)
     generic map (
@@ -103,43 +103,43 @@ begin
       a0  => '0' & modulus,
       a1  => '0' & and_b_a,
       b   => alu_b,
-      sel => alu_b_sel
+      sel => alu_b_select
     );
 
   -- Right shift one bit
-  bit_shifter : process (outreg_r) is
+  bit_shifter : process (out_reg_r) is
   begin
 
-    outreg_right_shifted <= '0' & outreg_r(bit_width downto 1);
+    out_reg_right_shifted <= '0' & out_reg_r(bit_width downto 1);
 
   end process bit_shifter;
 
-  outreg : process (clk, reset, outreg_enable, alu_result) is
+  outreg : process (clk, reset, out_reg_enable, alu_result) is
   begin
 
     if rising_edge(clk) then
       if (reset = '1') then
-        outreg_r <= (others => '0');
-      elsif (outreg_enable = '1') then
-        outreg_r <= alu_result;
+        out_reg_r <= (others => '0');
+      elsif (out_reg_enable = '1') then
+        out_reg_r <= alu_result;
       end if;
     end if;
 
   end process outreg;
 
-  shiftreg : process (clk, reset, shiftreg_enable, shiftreg_shift_enable, alu_result) is
+  shiftreg : process (clk, reset, shift_reg_enable, shift_reg_shift_enable, alu_result) is
   begin
 
     if rising_edge(clk) then
       -- Reset register
       if (reset = '1') then
-        shiftreg_r <= (others => '0');
+        shift_reg_r <= (others => '0');
       -- Latch register input
-      elsif (shiftreg_enable = '1') then
-        shiftreg_r <= operand_a;
+      elsif (shift_reg_enable = '1') then
+        shift_reg_r <= operand_a;
       -- Shift register content
-      elsif (shiftreg_shift_enable = '1') then
-        shiftreg_r <= '0' & shiftreg_r(bit_width - 1 downto 1);
+      elsif (shift_reg_shift_enable = '1') then
+        shift_reg_r <= '0' & shift_reg_r(bit_width - 1 downto 1);
       end if;
     end if;
 
