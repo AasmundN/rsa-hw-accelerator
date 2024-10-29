@@ -7,15 +7,19 @@ library ieee;
 
 entity rsa_core_control is
   port (
+
+    -- Clock and reset
     clk   : in    std_logic;
     reset : in    std_logic;
 
+    -- Core ready/valid signals
     msgin_ready : out   std_logic;
     msgin_valid : in    std_logic;
 
     msgout_ready : in    std_logic;
     msgout_valid : out   std_logic;
 
+    -- Compute units ready/valid signals
     modmul_enable : out   std_logic;
     modmul_valid  : in    std_logic;
 
@@ -25,6 +29,7 @@ entity rsa_core_control is
     modexp_out_ready : out   std_logic;
     modexp_out_valid : in    std_logic;
 
+    -- Register enable signals
     last_reg_enable : out   std_logic;
     in_reg_enable   : out   std_logic;
     m_reg_enable    : out   std_logic;
