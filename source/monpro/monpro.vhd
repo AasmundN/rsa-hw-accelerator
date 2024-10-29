@@ -51,9 +51,9 @@ architecture rtl of monpro is
   signal alu_less_than : std_logic;
 
   -- Internal register control
-  signal outreg_enable         : std_logic;
-  signal shiftreg_enable       : std_logic;
-  signal shiftreg_shift_enable : std_logic;
+  signal out_reg_enable         : std_logic;
+  signal shift_reg_enable       : std_logic;
+  signal shift_reg_shift_enable : std_logic;
 
   -- Used during execution of algorithm
   signal is_odd : std_logic;
@@ -71,9 +71,9 @@ begin
       alu_a_sel             => alu_a_select,
       alu_b_sel             => alu_b_select,
       alu_less_than         => alu_less_than,
-      outreg_enable         => outreg_enable,
-      shiftreg_enable       => shiftreg_enable,
-      shiftreg_shift_enable => shiftreg_shift_enable,
+      outreg_enable         => out_reg_enable,
+      shiftreg_enable       => shift_reg_enable,
+      shiftreg_shift_enable => shift_reg_shift_enable,
       modulus               => modulus,
       operand_a             => operand_a,
       operand_b             => operand_b,
@@ -87,9 +87,9 @@ begin
       enable             => enable,
       alu_less_than      => alu_less_than,
       is_odd             => is_odd,
-      out_reg_enable         => outreg_enable,
-      shift_reg_enable       => shiftreg_enable,
-      shift_reg_shift_enable => shiftreg_shift_enable,
+      out_reg_enable         => out_reg_enable,
+      shift_reg_enable       => shift_reg_enable,
+      shift_reg_shift_enable => shift_reg_shift_enable,
       out_reg_valid      => output_valid,
       alu_opcode             => alu_opcode,
       alu_a_select          => alu_a_select,
