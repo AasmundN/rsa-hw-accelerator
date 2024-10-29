@@ -22,7 +22,7 @@ entity modmul_datapath is
 
     -- outputs
     operand_a_last_bit : out   std_logic;
-    alu_less_than  : out   std_logic
+    alu_less_than      : out   std_logic
   );
 end entity modmul_datapath;
 

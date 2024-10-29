@@ -12,8 +12,8 @@ entity rsa_core_control is
     reset : in    std_logic;
 
     -- I/O handshake control
-    msgin_ready : out   std_logic;
-    msgin_valid : in    std_logic;
+    msgin_ready  : out   std_logic;
+    msgin_valid  : in    std_logic;
     msgout_ready : in    std_logic;
     msgout_valid : out   std_logic;
 
@@ -22,8 +22,8 @@ entity rsa_core_control is
     modmul_valid  : in    std_logic;
 
     -- Modexp control
-    modexp_in_ready : in    std_logic;
-    modexp_in_valid : out   std_logic;
+    modexp_in_ready  : in    std_logic;
+    modexp_in_valid  : out   std_logic;
     modexp_out_ready : out   std_logic;
     modexp_out_valid : in    std_logic;
 
@@ -149,10 +149,12 @@ begin
   update_state : process (clk, reset) is
   begin
 
-    if (reset = '0') then
-      state <= waiting;
-    elsif (rising_edge(clk)) then
-      state <= state_next;
+    if (rising_edge(clk)) then
+      if (reset = '1') then
+        state <= waiting;
+      else
+        state <= state_next;
+      end if;
     end if;
 
   end process update_state;

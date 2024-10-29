@@ -90,7 +90,7 @@ begin
 
         alu_opcode     <= add;
         out_reg_enable <= '1';
-        alu_b_select   <= '1';                                                   -- TODO: create type enum
+        alu_b_select   <= '1';
 
         if (enable = '1') then
           if (is_odd = '1') then
@@ -187,12 +187,12 @@ begin
   update_state : process (reset, clk) is
   begin
 
-    -- TODO: verify sensitifity list
-    -- TODO: reset is internal. if "enable" is low, then reset instead.
-    if (reset = '0') then
-      state <= idle;
-    elsif (rising_edge(clk)) then
-      state <= state_next;
+    if (rising_edge(clk)) then
+      if (reset = '1') then
+        state <= idle;
+      else
+        state <= state_next;
+      end if;
     end if;
 
   end process update_state;
@@ -200,10 +200,10 @@ begin
   update_counter : process (reset, clk) is
   begin
 
-    if (reset = '0') then
-      i_counter <= (others => '0');
-    elsif (rising_edge(clk)) then
-      if (incr_i_counter = '1') then
+    if (rising_edge(clk)) then
+      if (reset = '1') then
+        i_counter <= (others => '0');
+      elsif (incr_i_counter = '1') then
         i_counter <= std_logic_vector(unsigned(i_counter) + 1);
       end if;
     end if;
