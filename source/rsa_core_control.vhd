@@ -16,11 +16,19 @@ entity rsa_core_control is
     msgout_ready : in    std_logic;
     msgout_valid : out   std_logic;
 
-    modmul_valid     : in    std_logic;
+    modmul_enable : out   std_logic;
+    modmul_valid  : in    std_logic;
+
     modexp_in_ready  : in    std_logic;
+    modexp_out_ready : out   std_logic;
+    
+    modexp_in_valid  : out   std_logic;
     modexp_out_valid : in    std_logic;
 
-    last_reg_en : out   std_logic
+    last_reg_enable    : out   std_logic;
+    in_reg_enable      : out   std_logic;
+    m_reg_enable       : out   std_logic;
+    out_reg_enable : out   std_logic
   );
 end entity rsa_core_control;
 
@@ -35,14 +43,6 @@ architecture rtl of rsa_core_control is
 
   signal state, state_next : state_type;
 
-  signal modmul_en        : std_logic;
-  signal modexp_out_ready : std_logic;
-  signal modexp_in_valid  : std_logic;
-
-  signal in_reg_en      : std_logic;
-  signal m_reg_en       : std_logic;
-  signal out_reg_enable : std_logic;
-
 begin
 
   main_process : process (state) is
@@ -53,13 +53,13 @@ begin
     msgin_ready  <= '0';
     msgout_valid <= '0';
 
-    modmul_en        <= '0';
+    modmul_enable    <= '0';
     modexp_out_ready <= '0';
     modexp_in_valid  <= '0';
 
-    in_reg_en      <= '0';
-    m_reg_en       <= '0';
-    last_reg_en    <= '0';
+    in_reg_enable      <= '0';
+    m_reg_enable       <= '0';
+    last_reg_enable    <= '0';
     out_reg_enable <= '0';
 
     -- TODO: Reset = 0 -> state = ready
@@ -69,8 +69,8 @@ begin
 
         msgin_ready  <= '1';
         msgout_valid <= '0';
-        in_reg_en    <= '1';
-        last_reg_en  <= '1';
+        in_reg_enable    <= '1';
+        last_reg_enable  <= '1';
 
         if (msgin_valid = '0') then
           state_next <= waiting;
@@ -80,10 +80,10 @@ begin
 
       when modmul =>
 
-        msgin_ready <= '0';
-        in_reg_en   <= '0';
-        last_reg_en <= '0';
-        modmul_en   <= '1';
+        msgin_ready   <= '0';
+        in_reg_enable     <= '0';
+        last_reg_enable   <= '0';
+        modmul_enable <= '1';
 
         if (modmul_valid = '0') then
           state_next <= modmul;
@@ -93,9 +93,9 @@ begin
 
       when save_modmul =>
 
-        m_reg_en   <= '1';
-        modmul_en  <= '0';
-        state_next <= modexp_in;
+        m_reg_enable      <= '1';
+        modmul_enable <= '0';
+        state_next    <= modexp_in;
 
       when modexp_in =>
 
@@ -135,13 +135,13 @@ begin
         msgin_ready  <= '0';
         msgout_valid <= '0';
 
-        modmul_en        <= '0';
+        modmul_enable    <= '0';
         modexp_out_ready <= '0';
         modexp_in_valid  <= '0';
 
-        in_reg_en      <= '0';
-        m_reg_en       <= '0';
-        last_reg_en    <= '0';
+        in_reg_enable      <= '0';
+        m_reg_enable       <= '0';
+        last_reg_enable    <= '0';
         out_reg_enable <= '0';
 
     end case;
