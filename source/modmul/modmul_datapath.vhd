@@ -17,8 +17,8 @@ entity modmul_datapath is
         shift_reg_shift_en : in std_logic; 
         
         alu_opcode: in std_logic;
-        alu_a_sel: in std_logic;
-        alu_b_sel: in std_logic;
+        alu_a_select: in std_logic;
+        alu_b_select: in std_logic;
 
         --outputs
         operand_a_last_bit: out std_logic;
@@ -30,6 +30,5 @@ architecture rtl of modmul_datapath is
 
 begin
 
-    
 
 end architecture rtl;
