@@ -12,9 +12,9 @@ entity modmul_datapath is
     reset : in    std_logic;
 
     -- inputs
-    out_reg_en         : in    std_logic;
-    shift_reg_en       : in    std_logic;
-    shift_reg_shift_en : in    std_logic;
+    out_reg_enable         : in    std_logic;
+    shift_reg_enable       : in    std_logic;
+    shift_reg_shift_enable : in    std_logic;
 
     alu_opcode   : in    std_logic;
     alu_a_select : in    std_logic;
@@ -22,7 +22,7 @@ entity modmul_datapath is
 
     -- outputs
     operand_a_last_bit : out   std_logic;
-    alu_a_less_than_b  : out   std_logic
+    alu_less_than  : out   std_logic
   );
 end entity modmul_datapath;
 
