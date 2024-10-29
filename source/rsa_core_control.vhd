@@ -19,16 +19,16 @@ entity rsa_core_control is
     modmul_enable : out   std_logic;
     modmul_valid  : in    std_logic;
 
-    modexp_in_ready  : in    std_logic;
+    modexp_in_ready : in    std_logic;
+    modexp_in_valid : out   std_logic;
+
     modexp_out_ready : out   std_logic;
-    
-    modexp_in_valid  : out   std_logic;
     modexp_out_valid : in    std_logic;
 
-    last_reg_enable    : out   std_logic;
-    in_reg_enable      : out   std_logic;
-    m_reg_enable       : out   std_logic;
-    out_reg_enable : out   std_logic
+    last_reg_enable : out   std_logic;
+    in_reg_enable   : out   std_logic;
+    m_reg_enable    : out   std_logic;
+    out_reg_enable  : out   std_logic
   );
 end entity rsa_core_control;
 
@@ -57,19 +57,19 @@ begin
     modexp_out_ready <= '0';
     modexp_in_valid  <= '0';
 
-    in_reg_enable      <= '0';
-    m_reg_enable       <= '0';
-    last_reg_enable    <= '0';
-    out_reg_enable <= '0';
+    in_reg_enable   <= '0';
+    m_reg_enable    <= '0';
+    last_reg_enable <= '0';
+    out_reg_enable  <= '0';
 
     -- TODO: Reset = 0 -> state = ready
     case(state) is
 
       when waiting =>
 
-        msgin_ready  <= '1';
-        in_reg_enable    <= '1';
-        last_reg_enable  <= '1';
+        msgin_ready     <= '1';
+        in_reg_enable   <= '1';
+        last_reg_enable <= '1';
 
         if (msgin_valid = '0') then
           state_next <= waiting;
@@ -89,8 +89,8 @@ begin
 
       when save_modmul =>
 
-        m_reg_enable      <= '1';
-        state_next    <= modexp_in;
+        m_reg_enable <= '1';
+        state_next   <= modexp_in;
 
       when modexp_in =>
 
@@ -129,15 +129,15 @@ begin
 
         msgin_ready  <= '0';
         msgout_valid <= '0';
-    
+
         modmul_enable    <= '0';
         modexp_out_ready <= '0';
         modexp_in_valid  <= '0';
-    
-        in_reg_enable      <= '0';
-        m_reg_enable       <= '0';
-        last_reg_enable    <= '0';
-        out_reg_enable <= '0';
+
+        in_reg_enable   <= '0';
+        m_reg_enable    <= '0';
+        last_reg_enable <= '0';
+        out_reg_enable  <= '0';
 
     end case;
 
