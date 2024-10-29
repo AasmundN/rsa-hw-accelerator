@@ -114,7 +114,7 @@ begin
 
   end process bit_shifter;
 
-  outreg : process (clk, reset, out_reg_enable, alu_result) is
+  out_reg : process (clk, reset, out_reg_enable, alu_result) is
   begin
 
     if rising_edge(clk) then
@@ -125,9 +125,9 @@ begin
       end if;
     end if;
 
-  end process outreg;
+  end process out_reg;
 
-  shiftreg : process (clk, reset, shift_reg_enable, shift_reg_shift_enable, alu_result) is
+  shift_reg : process (clk, reset, shift_reg_enable, shift_reg_shift_enable, alu_result) is
   begin
 
     if rising_edge(clk) then
@@ -143,6 +143,6 @@ begin
       end if;
     end if;
 
-  end process shiftreg;
+  end process shift_reg;
 
 end architecture rtl;

@@ -94,7 +94,7 @@ begin
       output_valid => monpro_output_valid
     );
 
-  outreg_in_mux : entity work.mux_2to1(rtl)
+  out_reg_in_mux : entity work.mux_2to1(rtl)
     generic map (
       bit_width => bit_width
     )
@@ -117,7 +117,7 @@ begin
       sel => monpro_b_select
     );
 
-  outreg : process (clk, reset, out_reg_enable, out_reg_in) is
+  out_reg : process (clk, reset, out_reg_enable, out_reg_in) is
   begin
 
     if rising_edge(clk) then
@@ -128,9 +128,9 @@ begin
       end if;
     end if;
 
-  end process outreg;
+  end process out_reg;
 
-  mreg : process (clk, reset, m_reg_enable, operand_m_bar) is
+  m_reg : process (clk, reset, m_reg_enable, operand_m_bar) is
   begin
 
     if rising_edge(clk) then
@@ -141,9 +141,9 @@ begin
       end if;
     end if;
 
-  end process mreg;
+  end process m_reg;
 
-  shiftregs : process (clk, operand_e, e_reg_r, e_last_reg_r, reset, shift_reg_enable, shift_reg_shift_enable) is
+  shift_regs : process (clk, operand_e, e_reg_r, e_last_reg_r, reset, shift_reg_enable, shift_reg_shift_enable) is
   begin
 
     if rising_edge(clk) then
@@ -159,7 +159,7 @@ begin
       end if;
     end if;
 
-  end process shiftregs;
+  end process shift_regs;
 
   bit_scanner : process (operand_e) is
 
