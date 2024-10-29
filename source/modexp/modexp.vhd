@@ -49,8 +49,8 @@ architecture rtl of modexp is
   signal m_reg_enable           : std_logic;
 
   -- e loop signals
-  signal current_e_bit : std_logic;
-  signal is_e_bit_last : std_logic;
+  signal e_current_bit : std_logic;
+  signal e_bit_is_last : std_logic;
 
   -- MUX control
   signal out_reg_in_select : std_logic;
@@ -78,8 +78,8 @@ begin
       shift_reg_enable       => shift_reg_enable,
       shift_reg_shift_enable => shift_reg_shift_enable,
       m_reg_enable           => m_reg_enable,
-      current_e_bit          => current_e_bit,
-      is_e_bit_last          => is_e_bit_last,
+      e_current_bit          => e_current_bit,
+      e_bit_is_last          => e_bit_is_last,
       out_reg_in_select      => out_reg_in_select,
       monpro_b_select        => monpro_b_select,
       monpro_enable          => monpro_enable,

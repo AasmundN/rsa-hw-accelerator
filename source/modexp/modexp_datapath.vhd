@@ -41,8 +41,8 @@ entity modexp_datapath is
     -----------------------------------------------------------------------------
     -- Serial output of shift registers
     -----------------------------------------------------------------------------
-    current_e_bit : out   std_logic;
-    is_e_bit_last : out   std_logic;
+    e_current_bit : out   std_logic;
+    e_bit_is_last : out   std_logic;
 
     -----------------------------------------------------------------------------
     -- MUX selection
@@ -77,8 +77,8 @@ architecture rtl of modexp_datapath is
 begin
 
   result        <= out_reg_r;
-  current_e_bit <= e_reg_r(0);
-  is_e_bit_last <= e_last_reg_r(0);
+  e_current_bit <= e_reg_r(0);
+  e_bit_is_last <= e_last_reg_r(0);
 
   monpro : entity work.monpro(rtl)
     generic map (
@@ -153,7 +153,7 @@ begin
       elsif (shift_reg_enable = '1') then
         e_reg_r      <= operand_e;
         e_last_reg_r <= bit_scanner_out;
-      elsif (shift_reg_shift_enable) then
+      elsif (shift_reg_shift_enable = '1') then
         e_reg_r      <= '0' & e_reg_r(bit_width - 1 downto 1);
         e_last_reg_r <= '0' & e_last_reg_r(bit_width - 1 downto 1);
       end if;
