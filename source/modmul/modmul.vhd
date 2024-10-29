@@ -21,16 +21,15 @@ entity modmul is
     -----------------------------------------------------------------------------
     -- Result of calculation
     -----------------------------------------------------------------------------
-    result : out   std_logic_vector(bit_width - 1 downto 0)
+    result : out   std_logic_vector(bit_width - 1 downto 0);
 
     -----------------------------------------------------------------------------
     -- control signals
     -----------------------------------------------------------------------------
-    clk: in std_logic;
-    
-    enable : in std_logic;
-    output_valid : out std_logic
+    clk : in    std_logic;
 
+    enable       : in    std_logic;
+    output_valid : out   std_logic
   );
 end entity modmul;
 
