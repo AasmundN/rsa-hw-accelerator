@@ -48,12 +48,14 @@ end entity rsa_core;
 
 architecture rtl of rsa_core is
 
-  -- Compute unit control signals
-  signal modmul_enable,    modmul_valid     : std_logic;
+  -- Modul control signals
+  signal modmul_enable,    modmul_valid : std_logic;
+
+  -- Modexp control signals
   signal modexp_in_ready,  modexp_in_valid  : std_logic;
   signal modexp_out_ready, modexp_out_valid : std_logic;
 
-  -- Register control signals
+  -- Interntal register control signals
   signal is_msg_last_latch_enable : std_logic;
   signal in_reg_enable            : std_logic;
   signal m_reg_enable             : std_logic;
