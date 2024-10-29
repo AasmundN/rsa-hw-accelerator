@@ -13,8 +13,9 @@ entity monpro_control is
     clk   : in    std_logic;
     reset : out   std_logic;
 
-    -- Entity enable
-    enable : in    std_logic;
+    -- Module control
+    enable       : in    std_logic;
+    output_valid : out   std_logic;
 
     -- Flags and counters
     alu_less_than : in    std_logic;
@@ -26,10 +27,9 @@ entity monpro_control is
     shift_reg_shift_enable : out   std_logic;
 
     -- Data control
-    out_reg_valid : out   std_logic;
-    alu_opcode    : out   alu_opcode_t;
-    alu_a_select  : out   std_logic;
-    alu_b_select  : out   std_logic
+    alu_opcode   : out   alu_opcode_t;
+    alu_a_select : out   std_logic;
+    alu_b_select : out   std_logic
   );
 end entity monpro_control;
 
@@ -56,7 +56,7 @@ begin
     shift_reg_shift_enable <= '0';
     reset                  <= '0';
 
-    out_reg_valid  <= '0';
+    output_valid   <= '0';
     alu_opcode     <= pass;
     alu_a_select   <= '0';
     alu_b_select   <= '0';
@@ -68,8 +68,7 @@ begin
 
       when idle =>
 
-        out_reg_valid          <= '0';
-        shift_reg_shift_enable <= '0';
+        shift_reg_enable <= '1';
 
         if (enable = '1') then
           state_next <= start;
@@ -79,8 +78,7 @@ begin
 
       when start =>
 
-        shift_reg_enable <= '0';
-        reset            <= '1';
+        reset <= '1';
 
         if (enable = '1') then
           state_next <= add_b;
@@ -92,21 +90,22 @@ begin
 
         alu_opcode     <= add;
         out_reg_enable <= '1';
-        alu_a_select   <= '0';                                                   -- TODO: create type enum
         alu_b_select   <= '1';                                                   -- TODO: create type enum
 
-        if (is_odd = '1' and enable = '1') then
-          state_next <= add_n;
+        if (enable = '1') then
+          if (is_odd = '1') then
+            state_next <= add_n;
+          else
+            state_next <= shift;
+          end if;
         else
-          state_next <= shift;
+          state_next <= idle;
         end if;
 
       when add_n =>
 
         alu_opcode     <= add;
         out_reg_enable <= '1';
-        alu_a_select   <= '0';                                                   -- TODO: create type enum
-        alu_b_select   <= '0';                                                   -- TODO: create type enum
 
         if (enable = '1') then
           state_next <= shift;
@@ -116,7 +115,6 @@ begin
 
       when shift =>
 
-        alu_opcode             <= pass;
         out_reg_enable         <= '1';
         shift_reg_shift_enable <= '1';
         alu_a_select           <= '1';
@@ -134,11 +132,7 @@ begin
 
       when comp =>
 
-        alu_opcode             <= sub;
-        out_reg_enable         <= '0';
-        shift_reg_shift_enable <= '0';
-        alu_a_select           <= '0';
-        alu_b_select           <= '0';                                           -- TODO: verify this. Create enum.
+        alu_opcode <= sub;
 
         if (enable = '1') then
           if (alu_less_than = '1') then
@@ -154,8 +148,6 @@ begin
 
         alu_opcode     <= sub;
         out_reg_enable <= '1';
-        alu_a_select   <= '0';
-        alu_b_select   <= '0';
 
         if (enable = '1') then
           state_next <= valid;
@@ -165,8 +157,7 @@ begin
 
       when valid =>
 
-        out_reg_enable <= '0';
-        out_reg_valid  <= '1';
+        output_valid <= '1';
 
         if (enable = '1') then
           state_next <= valid;
@@ -181,7 +172,7 @@ begin
         shift_reg_shift_enable <= '0';
         reset                  <= '0';
 
-        out_reg_valid  <= '0';
+        output_valid   <= '0';
         alu_opcode     <= pass;
         alu_a_select   <= '0';
         alu_b_select   <= '0';

@@ -91,7 +91,7 @@ begin
       out_reg_enable         => out_reg_enable,
       shift_reg_enable       => shift_reg_enable,
       shift_reg_shift_enable => shift_reg_shift_enable,
-      out_reg_valid          => output_valid,
+      output_valid           => output_valid,
       alu_opcode             => alu_opcode,
       alu_a_select           => alu_a_select,
       alu_b_select           => alu_b_select
