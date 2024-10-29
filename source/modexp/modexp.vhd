@@ -2,18 +2,16 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
-  -- include utils package
-  use work.utils.all;
-
-entity monpro is
+entity modexp is
   generic (
     bit_width : integer := 256
   );
   port (
     -----------------------------------------------------------------------------
-    -- Clock
+    -- Clock and reset
     -----------------------------------------------------------------------------
-    clk : in    std_logic;
+    clk   : in    std_logic;
+    reset : in    std_logic;
 
     -----------------------------------------------------------------------------
     -- Modulus (n) of the modulo operation
@@ -21,10 +19,11 @@ entity monpro is
     modulus : in    std_logic_vector(bit_width - 1 downto 0);
 
     -----------------------------------------------------------------------------
-    -- Operands of Montgomery product
+    -- Operands of modular exponentiation
     -----------------------------------------------------------------------------
-    operand_a : in    std_logic_vector(bit_width - 1 downto 0);
-    operand_b : in    std_logic_vector(bit_width - 1 downto 0);
+    operand_m_bar : in    std_logic_vector(bit_width - 1 downto 0);
+    operand_x_bar : in    std_logic_vector(bit_width - 1 downto 0);
+    operand_e     : in    std_logic_vector(bit_width - 1 downto 0);
 
     -----------------------------------------------------------------------------
     -- Result of calculation
@@ -32,69 +31,59 @@ entity monpro is
     result : out   std_logic_vector(bit_width - 1 downto 0);
 
     -----------------------------------------------------------------------------
-    -- Control signals
+    -- Ready/valid handshake signals
     -----------------------------------------------------------------------------
-    enable       : in    std_logic;
-    output_valid : out   std_logic
+    in_valid  : in    std_logic;
+    in_ready  : out   std_logic;
+    out_ready : in    std_logic;
+    out_valid : out   std_logic
   );
-end entity monpro;
+end entity modexp;
 
-architecture rtl of monpro is
-
-  -- Internal reset signal
-  signal reset : std_logic;
-
-  -- ALU control signals
-  signal alu_opcode    : alu_opcode_t;
-  signal alu_a_select  : std_logic;
-  signal alu_b_select  : std_logic;
-  signal alu_less_than : std_logic;
+architecture rtl of modexp is
 
   -- Internal register control
   signal out_reg_enable         : std_logic;
   signal shift_reg_enable       : std_logic;
   signal shift_reg_shift_enable : std_logic;
+  signal m_reg_enable           : std_logic;
 
-  -- Used during execution of algorithm
-  signal is_odd : std_logic;
+  -- e loop signals
+  signal e_current_bit : std_logic;
+  signal e_bit_is_last : std_logic;
+
+  -- MUX control
+  signal out_reg_in_select : std_logic;
+  signal monpro_b_select   : std_logic_vector(1 downto 0);
+
+  -- Monpro control
+  signal monpro_enable       : std_logic;
+  signal monpro_output_valid : std_logic;
 
 begin
 
-  datapath : entity work.monpro_datapath(rtl)
+  datapath : entity work.modexp_datapath(rtl)
     generic map (
       bit_width => bit_width
     )
     port map (
       clk                    => clk,
       reset                  => reset,
-      alu_opcode             => alu_opcode,
-      alu_a_select           => alu_a_select,
-      alu_b_select           => alu_b_select,
-      alu_less_than          => alu_less_than,
-      out_reg_enable         => out_reg_enable,
-      shift_reg_enable       => shift_reg_enable,
-      shift_reg_shift_enable => shift_reg_shift_enable,
       modulus                => modulus,
-      operand_a              => operand_a,
-      operand_b              => operand_b,
+      operand_m_bar          => operand_m_bar,
+      operand_x_bar          => operand_x_bar,
+      operand_e              => operand_e,
       result                 => result,
-      is_odd                 => is_odd
-    );
-
-  control : entity work.monpro_control(rtl)
-    port map (
-      clk                    => clk,
-      reset                  => reset,
-      enable                 => enable,
-      alu_less_than          => alu_less_than,
-      is_odd                 => is_odd,
       out_reg_enable         => out_reg_enable,
       shift_reg_enable       => shift_reg_enable,
       shift_reg_shift_enable => shift_reg_shift_enable,
-      output_valid           => output_valid,
-      alu_opcode             => alu_opcode,
-      alu_a_select           => alu_a_select,
-      alu_b_select           => alu_b_select
+      m_reg_enable           => m_reg_enable,
+      e_current_bit          => e_current_bit,
+      e_bit_is_last          => e_bit_is_last,
+      out_reg_in_select      => out_reg_in_select,
+      monpro_b_select        => monpro_b_select,
+      monpro_enable          => monpro_enable,
+      monpro_output_valid    => monpro_output_valid
     );
 
 end architecture rtl;
