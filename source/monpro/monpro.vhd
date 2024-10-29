@@ -83,17 +83,18 @@ begin
 
   control : entity work.monpro_control(rtl)
     port map (
-      clk                => clk,
-      enable             => enable,
-      alu_less_than      => alu_less_than,
-      is_odd             => is_odd,
-      out_reg_en         => out_reg_enable,
-      shift_reg_en       => shift_reg_enable,
-      shift_reg_shift_en => shift_reg_shift_enable,
-      out_reg_valid      => output_valid,
-      opcode             => alu_opcode,
-      alu_a_sel          => alu_a_select,
-      alu_b_sel          => alu_b_select
+      clk                    => clk,
+      reset                  => reset,
+      enable                 => enable,
+      alu_less_than          => alu_less_than,
+      is_odd                 => is_odd,
+      out_reg_enable         => out_reg_enable,
+      shift_reg_enable       => shift_reg_enable,
+      shift_reg_shift_enable => shift_reg_shift_enable,
+      output_valid           => output_valid,
+      alu_opcode             => alu_opcode,
+      alu_a_select           => alu_a_select,
+      alu_b_select           => alu_b_select
     );
 
 end architecture rtl;

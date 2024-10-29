@@ -48,6 +48,37 @@ end entity rsa_core;
 
 architecture rtl of rsa_core is
 
+  -- Compute unit control signals
+  signal modmul_enable,    modmul_valid     : std_logic;
+  signal modexp_in_ready,  modexp_in_valid  : std_logic;
+  signal modexp_out_ready, modexp_out_valid : std_logic;
+
+  -- Register control signals
+  signal is_msg_last_latch_enable : std_logic;
+  signal in_reg_enable            : std_logic;
+  signal m_reg_enable             : std_logic;
+  signal out_reg_enable           : std_logic;
+
 begin
+
+  control : entity work.rsa_core_control(rtl)
+    port map (
+      clk                      => clk,
+      reset                    => reset_n,
+      msgin_ready              => msgin_ready,
+      msgin_valid              => msgin_valid,
+      msgout_ready             => msgout_ready,
+      msgout_valid             => msgout_valid,
+      modmul_enable            => modmul_enable,
+      modmul_valid             => modmul_valid,
+      modexp_in_ready          => modexp_in_ready,
+      modexp_in_valid          => modexp_in_valid,
+      modexp_out_ready         => modexp_out_ready,
+      modexp_out_valid         => modexp_out_valid,
+      is_msg_last_latch_enable => is_msg_last_latch_enable,
+      in_reg_enable            => in_reg_enable,
+      m_reg_enable             => m_reg_enable,
+      out_reg_enable           => out_reg_enable
+    );
 
 end architecture rtl;
