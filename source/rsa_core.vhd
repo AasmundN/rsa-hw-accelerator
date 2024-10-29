@@ -42,6 +42,8 @@ entity rsa_core is
     -----------------------------------------------------------------------------
     key_e_d    : in    std_logic_vector(c_block_size - 1 downto 0);
     key_n      : in    std_logic_vector(c_block_size - 1 downto 0);
+    x_bar      : in    std_logic_vector(c_block_size - 1 downto 0);
+    r_value    : in    std_logic_vector(c_block_size - 1 downto 0);
     rsa_status : out   std_logic_vector(31 downto 0)
   );
 end entity rsa_core;
@@ -62,6 +64,33 @@ architecture rtl of rsa_core is
   signal out_reg_enable           : std_logic;
 
 begin
+
+  datapath : entity work.rsa_core_datapath(rtl)
+    generic map (
+      bit_width => c_block_size
+    )
+    port map (
+      clk                      => clk,
+      reset                    => reset_n,
+      key_n                    => key_n,
+      key_e_d                  => key_e_d,
+      x_bar                    => x_bar,
+      montgomery_factor        => r_value,
+      msgin_data               => msgin_data,
+      msgout_data              => msgout_data,
+      msgin_last               => msgin_last,
+      msgout_last => msgout_last,
+      modmul_enable            => modmul_enable,
+      modmul_valid             => modmul_valid,
+      modexp_in_ready          => modexp_in_ready,
+      modexp_in_valid          => modexp_in_valid,
+      modexp_out_ready         => modexp_out_ready,
+      modexp_out_valid         => modexp_out_valid,
+      is_msg_last_latch_enable => is_msg_last_latch_enable,
+      in_reg_enable            => in_reg_enable,
+      m_reg_enable             => m_reg_enable,
+      out_reg_enable           => out_reg_enable
+    );
 
   control : entity work.rsa_core_control(rtl)
     port map (
