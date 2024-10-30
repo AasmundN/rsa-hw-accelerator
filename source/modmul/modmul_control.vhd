@@ -194,6 +194,23 @@ begin
           state_next <= idle;
         end if;
 
+      when others =>
+
+        reset <= '0';
+
+        -- Default values for ALU control signals
+        alu_opcode   <= pass;
+        alu_a_select <= to_logic(out_reg);
+        alu_b_select <= to_logic(b_operand);
+
+        -- Default values for Register control signals
+        output_valid               <= '0';
+        out_reg_enable             <= '0';
+        shift_reg_enable           <= '0';
+        shift_reg_shift_enable     <= '0';
+        i_counter_increment_enable <= '0';
+        i_counter_reset            <= '0';
+
     end case;
 
   end process main_process;
