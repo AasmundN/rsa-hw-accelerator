@@ -49,6 +49,27 @@ architecture rtl of modmul is
 
 begin
 
+  datapath : entity work.modmul_datapath(rtl)
+    generic map (
+      bit_width => bit_width
+    )
+    port map (
+      clk                    => clk,
+      reset                  => reset,
+      modulus                => modulus,
+      operand_a              => operand_a,
+      operand_b              => operand_b,
+      result                 => result,
+      out_reg_enable         => out_reg_enable,
+      shift_reg_enable       => shift_reg_enable,
+      shift_reg_shift_enable => shift_reg_shift_enable,
+      alu_opcode             => alu_opcode,
+      alu_a_select           => alu_a_select,
+      alu_b_select           => alu_b_select,
+      operand_a_last_bit     => a_is_last,
+      alu_less_than          => alu_less_than
+    );
+
   control : entity work.modmul_control(rtl)
     port map (
       clk                    => clk,
