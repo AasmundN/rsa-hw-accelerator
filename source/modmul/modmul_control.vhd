@@ -14,7 +14,7 @@ entity modmul_control is
 
     -- Flags
     alu_less_than : in    std_logic;
-    a_is_last     : in    std_logic;
+    a_bit_is_last : in    std_logic;
 
     -- ALU control signals
     alu_opcode   : out   alu_opcode_t;
@@ -38,14 +38,14 @@ architecture rtl of modmul_control is
     valid
   );
 
-  type alu_a_operand is (out_reg_shifted, out_reg);
+  type alu_a_mux_input_t is (out_reg_shifted, out_reg);
 
-  type alu_b_operand is (b_operand, modulus_operand);
+  type alu_b_mux_input_t is (b_operand, modulus_operand);
 
   -- Conversion functions for operands
 
-  function to_logic (
-    val : alu_a_operand
+  function mux_input_to_logic (
+    val : alu_a_mux_input_t
   ) return std_logic is
   begin
 
@@ -61,10 +61,10 @@ architecture rtl of modmul_control is
 
     end case;
 
-  end function to_logic;
+  end function mux_input_to_logic;
 
-  function to_logic (
-    val : alu_b_operand
+  function mux_input_to_logic (
+    val : alu_b_mux_input_t
   ) return std_logic is
   begin
 
@@ -80,7 +80,7 @@ architecture rtl of modmul_control is
 
     end case;
 
-  end function to_logic;
+  end function mux_input_to_logic;
 
   -- Internal registers
   signal i_counter_r                                 : std_logic_vector(1 downto 0);
@@ -98,8 +98,8 @@ begin
 
     -- Default values for ALU control signals
     alu_opcode   <= pass;
-    alu_a_select <= to_logic(out_reg);
-    alu_b_select <= to_logic(b_operand);
+    alu_a_select <= mux_input_to_logic(out_reg);
+    alu_b_select <= mux_input_to_logic(b_operand);
 
     -- Default values for Register control signals
     output_valid               <= '0';
@@ -115,6 +115,8 @@ begin
 
       when idle =>
 
+        shift_reg_enable <= '1';
+
         if (enable = '1') then
           state_next <= start;
         else
@@ -123,8 +125,7 @@ begin
 
       when start =>
 
-        shift_reg_enable <= '1';
-        reset            <= '1';
+        reset <= '1';
 
         if (enable = '1') then
           state_next <= add_b;
@@ -136,8 +137,8 @@ begin
 
         alu_opcode     <= add;
         out_reg_enable <= '1';
-        alu_a_select   <= to_logic(out_reg_shifted);
-        alu_b_select   <= to_logic(b_operand);
+        alu_a_select   <= mux_input_to_logic(out_reg_shifted);
+        alu_b_select   <= mux_input_to_logic(b_operand);
 
         if (enable = '1') then
           state_next <= comp;
@@ -148,8 +149,8 @@ begin
       when comp =>
 
         alu_opcode   <= sub;
-        alu_a_select <= to_logic(out_reg);
-        alu_b_select <= to_logic(modulus_operand);
+        alu_a_select <= mux_input_to_logic(out_reg);
+        alu_b_select <= mux_input_to_logic(modulus_operand);
 
         if (enable = '1') then
           if (alu_less_than = '1') then
@@ -180,12 +181,12 @@ begin
 
         alu_opcode             <= add;
         shift_reg_shift_enable <= '1';
-        alu_a_select           <= to_logic(out_reg_shifted);
-        alu_b_select           <= to_logic(b_operand);
+        alu_a_select           <= mux_input_to_logic(out_reg_shifted);
+        alu_b_select           <= mux_input_to_logic(b_operand);
         i_counter_reset        <= '1';
 
         if (enable = '1') then
-          if (a_is_last = '1') then
+          if (a_bit_is_last = '1') then
             state_next <= valid;
           else
             state_next <= add_b;
@@ -200,8 +201,8 @@ begin
 
         -- Default values for ALU control signals
         alu_opcode   <= pass;
-        alu_a_select <= to_logic(out_reg);
-        alu_b_select <= to_logic(b_operand);
+        alu_a_select <= mux_input_to_logic(out_reg);
+        alu_b_select <= mux_input_to_logic(b_operand);
 
         -- Default values for Register control signals
         output_valid               <= '0';

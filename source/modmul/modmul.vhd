@@ -36,8 +36,8 @@ end entity modmul;
 
 architecture rtl of modmul is
 
-  signal reset     : std_logic;
-  signal a_is_last : std_logic; -- Check if this is internal or external @aasmund
+  signal reset         : std_logic;
+  signal a_bit_is_last : std_logic; -- Check if this is internal or external @aasmund
 
   signal alu_less_than              : std_logic;
   signal alu_opcode                 : alu_opcode_t;
@@ -66,7 +66,7 @@ begin
       alu_opcode             => alu_opcode,
       alu_a_select           => alu_a_select,
       alu_b_select           => alu_b_select,
-      operand_a_last_bit     => a_is_last,
+      operand_a_last_bit     => a_bit_is_last,
       alu_less_than          => alu_less_than
     );
 
@@ -75,7 +75,7 @@ begin
       clk                    => clk,
       reset                  => reset,
       enable                 => enable,
-      a_is_last              => a_is_last,
+      a_bit_is_last          => a_bit_is_last,
       alu_less_than          => alu_less_than,
       alu_opcode             => alu_opcode,
       alu_a_select           => alu_a_select,
