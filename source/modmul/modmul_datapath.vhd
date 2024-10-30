@@ -69,10 +69,7 @@ begin
   begin
 
     if rising_edge(clk) then
-      if (reset = '1') then
-        a_reg_r      <= (others => '0');
-        a_last_reg_r <= (others => '0');
-      elsif (shift_reg_enable = '1') then
+      if (shift_reg_enable = '1') then
         a_reg_r      <= operand_a;
         a_last_reg_r <= bit_scanner_out;
       elsif (shift_reg_shift_enable = '1') then
