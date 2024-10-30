@@ -207,4 +207,17 @@ begin
 
   end process update_state;
 
+  update_counter : process (all) is
+  begin
+
+    if (rising_edge(clk)) then
+      if (i_counter_reset = '1') then
+        i_counter_r <= (others => '0');
+      elsif (i_counter_increment_enable = '1') then
+        i_counter_r <= std_logic_vector(unsigned(i_counter_r) + 1);
+      end if;
+    end if;
+
+  end process update_counter;
+
 end architecture rtl;
