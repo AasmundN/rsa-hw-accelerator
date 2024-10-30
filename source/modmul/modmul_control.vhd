@@ -162,38 +162,49 @@ begin
         end if;
 
       when save =>
-      out_reg_enable <= '1';
-      i_counter_increment_enable <= '1';
 
-      if (enable = '1') then
-        if (to_integer(unsigned(i_counter_r)) < 3) then
-          state_next <= comp;
+        out_reg_enable             <= '1';
+        i_counter_increment_enable <= '1';
+
+        if (enable = '1') then
+          if (to_integer(unsigned(i_counter_r)) < 3) then
+            state_next <= comp;
+          else
+            state_next <= shift;
+          end if;
         else
-          state_next <= shift;
+          state_next <= idle;
         end if;
-      else
-        state_next <= idle;
-      end if;
 
       when shift =>
-      alu_opcode <= add;
-      shift_reg_shift_enable <= '1';
-      alu_a_select <= to_logic(out_reg_shifted);
-      alu_b_select <= to_logic(b_operand);
-      i_counter_reset <= '1';
 
-      if (enable = '1') then
-        if (a_is_last = '1') then
-          state_next <= valid;
+        alu_opcode             <= add;
+        shift_reg_shift_enable <= '1';
+        alu_a_select           <= to_logic(out_reg_shifted);
+        alu_b_select           <= to_logic(b_operand);
+        i_counter_reset        <= '1';
+
+        if (enable = '1') then
+          if (a_is_last = '1') then
+            state_next <= valid;
           else
-          state_next <= add_b;
+            state_next <= add_b;
+          end if;
+        else
+          state_next <= idle;
         end if;
-      else
-        state_next <= idle;
-      end if;
 
     end case;
 
   end process main_process;
+
+  update_state : process (all) is
+  begin
+
+    if (rising_edge(clk)) then
+      state <= state_next;
+    end if;
+
+  end process update_state;
 
 end architecture rtl;
