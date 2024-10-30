@@ -22,3 +22,4 @@ global_signals_and_shared_variables_pkg: protected_types_pkg
 bfm_common_pkg: methods_pkg
 methods_pkg: license_pkg
 data_fifo_pkg: data_queue_pkg
+uvvm_util_context: methods_pkg bfm_common_pkg license_pkg

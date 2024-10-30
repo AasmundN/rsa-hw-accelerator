@@ -253,7 +253,7 @@ units:
 
 %.wave: 
 	@printf '\n[WAVE]    %-70s\n' "$(subst .wave,.ghw,$@)"
-	@gtkwave $(TOP)/$(DIR)/$(subst .wave,.ghw,$@)
+	nohup gtkwave $(TOP)/$(DIR)/$(subst .wave,.ghw,$@) &
 
 format:
 	$(foreach file,$(PROJECT_FILES),echo; vsg -c $(TOP)/vsg_config.json -f $(TOP)/$(file) --fix;)

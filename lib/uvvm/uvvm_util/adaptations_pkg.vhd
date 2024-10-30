@@ -38,12 +38,12 @@ package adaptations_pkg is
   constant C_LOG_PREFIX : string := "UVVM: "; -- Note: ': ' is recommended as final characters
 
   constant C_LOG_PREFIX_WIDTH   : natural := C_LOG_PREFIX'length;
-  constant C_LOG_MSG_ID_WIDTH   : natural := 24;
-  constant C_LOG_TIME_WIDTH     : natural := 16; -- 3 chars used for unit eg. " ns"
+  constant C_LOG_MSG_ID_WIDTH   : natural := 20;
+  constant C_LOG_TIME_WIDTH     : natural := 12; -- 3 chars used for unit eg. " ns"
   constant C_LOG_TIME_BASE      : time    := ns; -- Unit in which time is shown in log (ns | ps)
   constant C_LOG_TIME_DECIMALS  : natural := 1; -- Decimals to show for given C_LOG_TIME_BASE
-  constant C_LOG_SCOPE_WIDTH    : natural := 30; -- Maximum scope length
-  constant C_LOG_LINE_WIDTH     : natural := 115;
+  constant C_LOG_SCOPE_WIDTH    : natural := 16; -- Maximum scope length
+  constant C_LOG_LINE_WIDTH     : natural := 130;
   constant C_LOG_INFO_WIDTH     : natural := C_LOG_LINE_WIDTH - C_LOG_PREFIX_WIDTH;
 
   constant C_USE_BACKSLASH_N_AS_LF : boolean := true; -- If true interprets '\n' as Line feed
