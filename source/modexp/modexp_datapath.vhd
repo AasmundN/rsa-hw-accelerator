@@ -161,23 +161,13 @@ begin
 
   end process shift_regs;
 
-  bit_scanner : process (operand_e) is
-
-    variable temp_output : std_logic_vector(bit_width - 1 downto 0) := (others => '0');
-
-  begin
-
-    for i in operand_e'reverse_range loop
-
-      if (operand_e(i) = '1') then
-        temp_output(i) := '1';
-        exit;
-      end if;
-
-    end loop;
-
-    bit_scanner_out <= temp_output;
-
-  end process bit_scanner;
+  bit_scanner : entity work.msb_bitscanner(rtl)
+    generic map (
+      bit_width => bit_width
+    )
+    port map (
+      signal_in  => operand_e,
+      signal_out => bit_scanner_out
+    );
 
 end architecture rtl;
