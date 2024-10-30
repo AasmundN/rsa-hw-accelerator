@@ -82,6 +82,9 @@ begin
     );
 
   control : entity work.monpro_control(rtl)
+    generic map (
+      bit_width => bit_width
+    )
     port map (
       clk                    => clk,
       reset                  => reset,
