@@ -52,7 +52,9 @@ architecture rtl of monpro_datapath is
   signal and_b_a : std_logic_vector(bit_width - 1 downto 0);
 
   -- Internal registers
-  -- Intermediary result has size bit_width+1
+
+  -- The intermediary result of the calculation loop
+  -- requires a size of bit_width + 2 (see monpro algorithm)
   signal out_reg_r   : std_logic_vector(bit_width + 1 downto 0);
   signal shift_reg_r : std_logic_vector(bit_width - 1 downto 0);
 
