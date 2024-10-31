@@ -139,9 +139,9 @@ begin
 
         if (enable = '1') then
           if (alu_less_than = '1') then
-            state_next <= save;
-          else
             state_next <= valid;
+          else
+            state_next <= save;
           end if;
         else
           state_next <= idle;
@@ -191,11 +191,7 @@ begin
   begin
 
     if (rising_edge(clk)) then
-      if (reset = '1') then
-        state <= idle;
-      else
-        state <= state_next;
-      end if;
+      state <= state_next;
     end if;
 
   end process update_state;
