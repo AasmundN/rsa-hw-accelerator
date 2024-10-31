@@ -61,6 +61,9 @@ begin
     -- Testbench config
     set_alert_stop_limit(ERROR, 5);
 
+    disable_log_msg(ID_SEQUENCER);
+    disable_log_msg(ID_POS_ACK);
+
     log(ID_LOG_HDR_LARGE, "Running monpro_tb");
 
     for i in 0 to test_set_size - 1 loop
