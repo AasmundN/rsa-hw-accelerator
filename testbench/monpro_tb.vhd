@@ -19,8 +19,9 @@ end entity monpro_tb;
 
 architecture rtl of monpro_tb is
 
-  -- Longest possible time to output valid
-  constant worst_time_to_valid : time := (3 * bit_width + 4) * clock_period;
+  -- Longest possible time to output valid (see state diagram):
+  -- start states + loop states + end states
+  constant worst_time_to_valid : time := (1 + 3 * bit_width + 3) * clock_period;
 
   signal clk : std_logic;
 
