@@ -39,7 +39,7 @@ endif
 
 GHDLAFLAGS ?= --std=08 -frelaxed --workdir=$(TOP)/$(DIR) -Wno-hide -Wno-shared
 GHDLRFLAGS ?= --std=08 -frelaxed --workdir=$(TOP)/$(DIR) -Wno-hide -Wno-shared
-GHDLRUNOPTS ?=
+GHDLRUNOPTS ?= 
 
 ifeq ($(SIM),ghdl)
     COM = @ghdl -a $(GHDLAFLAGS) --work=$(LIBNAME) $<
@@ -48,10 +48,10 @@ ifeq ($(SIM),ghdl)
 			"ghdl $(GHDLRFLAGS) $(UNIT); show -stretch -width -format dot -prefix $(TOP)/$(DIR)/$(UNIT)"
 
     ifeq ($(GUI),yes)
-        RUN = ghdl -r $(GHDLRFLAGS) $(UNIT) $(GHDLRUNOPTS) --wave=$(UNIT).ghw; \
+        RUN = ghdl -r $(GHDLRFLAGS) $(UNIT) $(GHDLRUNOPTS) --wave=$(UNIT).ghw --ieee-asserts=disable; \
               printf '\nGHW file: %s.ghw\n' '$(DIR)/$(UNIT)'
     else
-        RUN = ghdl -r $(GHDLRFLAGS) $(UNIT) $(GHDLRUNOPTS)
+        RUN = ghdl -r $(GHDLRFLAGS) $(UNIT) $(GHDLRUNOPTS) --ieee-asserts=disable
     endif
 else
     $(error "$(SIM): invalid SIM value")
