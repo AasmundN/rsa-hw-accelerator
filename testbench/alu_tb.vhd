@@ -91,12 +91,12 @@ begin
 
     for i in 0 to test_set_size - 1 loop
 
+      log(ID_LOG_HDR, "Running test " & to_string(i));
+
       -- Generate random inputs
       test_opcode := alu_opcode_t'val(random(0, 2));
       test_a      := random(operand_a'length);
       test_b      := random(operand_b'length);
-
-      log(ID_LOG_HDR, "Running test " & to_string(i));
 
       -- Calculate expected outputs
       case test_opcode is
