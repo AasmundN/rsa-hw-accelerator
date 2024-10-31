@@ -11,5 +11,5 @@ worklib.files = [
   "source/*.vhd",
   "source/**/*.vhd",
   "testbench/*.vhd",
-  "testbench/**/*.vhd",
+  "testbench/**/*.vhd"
 ]
