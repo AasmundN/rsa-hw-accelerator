@@ -6,7 +6,9 @@ package utils is
 
   type alu_opcode_t is (pass, add, sub);
 
-  -- Function for calculating Mongomery product
+  -- Calculate Mongomery product
+  -- It is assumed that a and b are less than n
+  -- and n is an odd number
 
   function monpro (
     a,
@@ -14,11 +16,24 @@ package utils is
     n : std_logic_vector
   ) return std_logic_vector;
 
+  -- Calculate modular multiplication
+  -- Sizes of a, b, and n must be within bit_width
+
   function modmul (
     a,
     b,
     n : std_logic_vector;
     bit_width : integer
+  ) return std_logic_vector;
+
+  -- Calculate modular exponentiation
+  -- It is assumed that m and e are less than n
+  -- and that n is an odd number
+
+  function modexp (
+    m,
+    e,
+    n : std_logic_vector
   ) return std_logic_vector;
 
 end package utils;
@@ -89,5 +104,36 @@ package body utils is
     return p(bit_width - 1 downto 0);
 
   end function modmul;
+
+  function modexp (
+    m,
+    e,
+    n : std_logic_vector
+  ) return std_logic_vector
+  is
+
+    variable c : std_logic_vector(n'length - 1 downto 0) := (others => '0');
+
+  begin
+
+    if (e(e'length - 1) = '1') then
+      c := m;
+    else
+      c(0) := '1';
+    end if;
+
+    for i in e'length - 1 downto 0 loop
+
+      c := modmul(c, c, n, n'length);
+
+      if (e(i) = '1') then
+        c := modmul(c, m, n, n'length);
+      end if;
+
+    end loop;
+
+    return c;
+
+  end function modexp;
 
 end package body utils;
