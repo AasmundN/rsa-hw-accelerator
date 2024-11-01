@@ -48,7 +48,7 @@ architecture rtl of rsa_core_control is
 
 begin
 
-  main_process : process (state) is
+  main_process : process (all) is
   begin
 
     state_next <= waiting;
