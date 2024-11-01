@@ -6,12 +6,7 @@ library ieee;
   use work.utils.all;
 
 entity monpro_control is
-  generic (
-    bit_width : integer := 256
-  );
   port (
-    -- TODO: MISSING INTERNAL COUNTER. MOVE THE EXISTING TO I_COUNTER TO THE ARCHITECTURE.
-
     -- Clock
     clk   : in    std_logic;
     reset : out   std_logic;
@@ -32,7 +27,9 @@ entity monpro_control is
     -- Data control
     alu_opcode   : out   alu_opcode_t;
     alu_a_select : out   std_logic;
-    alu_b_select : out   std_logic
+    alu_b_select : out   std_logic;
+
+    n_bit_is_last : in    std_logic
   );
 end entity monpro_control;
 
@@ -46,12 +43,10 @@ architecture rtl of monpro_control is
   );
 
   signal state, state_next : state_type;
-  signal i_counter         : std_logic_vector(7 downto 0); -- Used to store loop counter
-  signal incr_i_counter    : std_logic;
 
 begin
 
-  main_state_process : process (clk, state) is
+  main_state_process : process (all) is
   begin
 
     out_reg_enable         <= '0';
@@ -59,11 +54,10 @@ begin
     shift_reg_shift_enable <= '0';
     reset                  <= '0';
 
-    output_valid   <= '0';
-    alu_opcode     <= pass;
-    alu_a_select   <= '0';
-    alu_b_select   <= '0';
-    incr_i_counter <= '0';
+    output_valid <= '0';
+    alu_opcode   <= pass;
+    alu_a_select <= '0';
+    alu_b_select <= '0';
 
     state_next <= idle;
 
@@ -121,10 +115,9 @@ begin
         out_reg_enable         <= '1';
         shift_reg_shift_enable <= '1';
         alu_a_select           <= '1';
-        incr_i_counter         <= '1';
 
         if (enable = '1') then
-          if (to_integer(unsigned(i_counter)) < bit_width - 1) then
+          if (n_bit_is_last = '0') then
             state_next <= add_b;
           else
             state_next <= comp;
@@ -175,11 +168,10 @@ begin
         shift_reg_shift_enable <= '0';
         reset                  <= '0';
 
-        output_valid   <= '0';
-        alu_opcode     <= pass;
-        alu_a_select   <= '0';
-        alu_b_select   <= '0';
-        incr_i_counter <= '0';
+        output_valid <= '0';
+        alu_opcode   <= pass;
+        alu_a_select <= '0';
+        alu_b_select <= '0';
 
         state_next <= idle;
 
@@ -195,18 +187,5 @@ begin
     end if;
 
   end process update_state;
-
-  update_counter : process (reset, clk) is
-  begin
-
-    if (rising_edge(clk)) then
-      if (reset = '1') then
-        i_counter <= (others => '0');
-      elsif (incr_i_counter = '1') then
-        i_counter <= std_logic_vector(unsigned(i_counter) + 1);
-      end if;
-    end if;
-
-  end process update_counter;
 
 end architecture rtl;
