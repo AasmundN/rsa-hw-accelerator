@@ -6,6 +6,10 @@ package utils is
 
   type alu_opcode_t is (pass, add, sub);
 
+  function bitscanner (
+    a : std_logic_vector
+  ) return std_logic_vector;
+
   -- Calculate Mongomery product
   -- It is assumed that a and b are less than n
   -- and n is an odd number
@@ -40,6 +44,28 @@ end package utils;
 
 package body utils is
 
+  function bitscanner (
+    a : std_logic_vector
+  ) return std_logic_vector
+    is
+
+    variable temp_output : std_logic_vector(a'range) := (others => '0');
+
+  begin
+
+    for i in a'range loop
+
+      if (a(i) = '1') then
+        temp_output(i) := '1';
+        exit;
+      end if;
+
+    end loop;
+
+    return temp_output;
+
+  end function bitscanner;
+
   function monpro (
     a,
     b,
@@ -48,12 +74,14 @@ package body utils is
   return std_logic_vector
   is
 
-    variable u     : std_logic_vector(n'length + 2 downto 0) := (others => '0');
-    variable a_vec : std_logic_vector(n'length - 1 downto 0) := (others => '0');
+    variable u           : std_logic_vector(n'length + 2 downto 0) := (others => '0');
+    variable a_vec       : std_logic_vector(n'length - 1 downto 0) := (others => '0');
+    variable n_shift_reg : std_logic_vector(n'length - 1 downto 0) := (others => '0');
 
   begin
 
-    a_vec := a;
+    a_vec       := a;
+    n_shift_reg := bitscanner(n);
 
     for i in a_vec'reverse_range loop
 
@@ -66,6 +94,10 @@ package body utils is
       end if;
 
       u := std_logic_vector(unsigned(u) / 2);
+
+      if (n_shift_reg(i) = '1') then
+        exit;
+      end if;
 
     end loop;
 
