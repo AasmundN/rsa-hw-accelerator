@@ -71,14 +71,11 @@ architecture rtl of modexp_datapath is
   signal e_reg_r      : std_logic_vector(bit_width - 1 downto 0);
   signal e_last_reg_r : std_logic_vector(bit_width - 1 downto 0);
 
-  -- Bit scanner
-  signal bit_scanner_out : std_logic_vector(bit_width - 1 downto 0);
-
 begin
 
   result        <= out_reg_r;
-  e_current_bit <= e_reg_r(0);
-  e_bit_is_last <= e_last_reg_r(0);
+  e_current_bit <= e_reg_r(e_reg_r'left);
+  e_bit_is_last <= e_last_reg_r(e_last_reg_r'left);
 
   monpro : entity work.monpro(rtl)
     generic map (
@@ -111,7 +108,7 @@ begin
     )
     port map (
       a0  => out_reg_r,
-      a1  => (others => '1'),
+      a1  => std_logic_vector(to_unsigned(1, bit_width)),
       a2  => m_reg_r,
       b   => monpro_b_in,
       sel => monpro_b_select
@@ -130,44 +127,30 @@ begin
 
   end process out_reg;
 
-  m_reg : process (clk, reset, m_reg_enable, operand_m_bar) is
+  m_reg : process (clk, m_reg_enable, operand_m_bar) is
   begin
 
     if rising_edge(clk) then
-      if (reset = '1') then
-        m_reg_r <= (others => '0');
-      elsif (m_reg_enable = '1') then
+      if (m_reg_enable = '1') then
         m_reg_r <= operand_m_bar;
       end if;
     end if;
 
   end process m_reg;
 
-  shift_regs : process (clk, operand_e, e_reg_r, e_last_reg_r, reset, shift_reg_enable, shift_reg_shift_enable) is
+  shift_regs : process (clk, operand_e, e_reg_r, e_last_reg_r, shift_reg_enable, shift_reg_shift_enable) is
   begin
 
     if rising_edge(clk) then
-      if (reset = '1') then
-        e_reg_r      <= (others => '0');
-        e_last_reg_r <= (others => '0');
-      elsif (shift_reg_enable = '1') then
+      if (shift_reg_enable = '1') then
         e_reg_r      <= operand_e;
-        e_last_reg_r <= bit_scanner_out;
+        e_last_reg_r <= std_logic_vector(to_unsigned(1, bit_width));
       elsif (shift_reg_shift_enable = '1') then
-        e_reg_r      <= '0' & e_reg_r(bit_width - 1 downto 1);
-        e_last_reg_r <= '0' & e_last_reg_r(bit_width - 1 downto 1);
+        e_reg_r      <= e_reg_r(bit_width - 2 downto 0) & '0';
+        e_last_reg_r <= e_last_reg_r(bit_width - 2 downto 0) & '0';
       end if;
     end if;
 
   end process shift_regs;
-
-  bit_scanner : entity work.msb_bitscanner(rtl)
-    generic map (
-      bit_width => bit_width
-    )
-    port map (
-      signal_in  => operand_e,
-      signal_out => bit_scanner_out
-    );
 
 end architecture rtl;
