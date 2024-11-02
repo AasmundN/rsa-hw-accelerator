@@ -74,7 +74,7 @@ architecture rtl of monpro_datapath is
 begin
 
   result        <= out_reg_r(bit_width - 1 downto 0);
-  is_odd        <= out_reg_r(0) xor (operand_b(0) and a_shift_reg_r(0));
+  is_odd        <= alu_a(0) xor (operand_b(0) and a_shift_reg_r(0));
   n_bit_is_last <= n_shift_reg_r(0);
 
   alu : entity work.alu(rtl)
