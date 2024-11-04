@@ -61,8 +61,8 @@ begin
     -- Testbench config
     set_alert_stop_limit(ERROR, 5);
 
-    disable_log_msg(ID_SEQUENCER);
-    disable_log_msg(ID_POS_ACK);
+    -- disable_log_msg(ID_SEQUENCER);
+    -- disable_log_msg(ID_POS_ACK);
 
     log(ID_LOG_HDR_LARGE, "Running monpro_tb");
 
@@ -121,7 +121,6 @@ begin
       wait until rising_edge(clk);
       enable <= '0';
 
-      wait until rising_edge(clk);
       check_value(result, expected_result, "Checking result");
 
     end loop;

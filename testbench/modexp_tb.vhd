@@ -20,10 +20,10 @@ architecture func of modexp_tb is
 
   -- Longest possible time to output valid (see state diagrams):
   -- start states + loop states + end states
-  constant worst_time_to_monpro_valid : integer := (1 + 3 * bit_width + 3);
+  constant worst_time_to_monpro_valid : integer := (2 * bit_width + 2);
   constant worst_time_to_valid        : integer := bit_width +
-                                                   (2 * worst_time_to_monpro_valid + 3) * bit_width +
-                                                   worst_time_to_monpro_valid + 2;
+                                                   (2 * worst_time_to_monpro_valid + 1) * bit_width +
+                                                   worst_time_to_monpro_valid + 1;
 
   signal clk_counter : natural;
 
@@ -78,8 +78,8 @@ begin
     -- Testbench config
     set_alert_stop_limit(ERROR, 5);
 
-    disable_log_msg(ID_SEQUENCER);
-    disable_log_msg(ID_POS_ACK);
+    -- disable_log_msg(ID_SEQUENCER);
+    -- disable_log_msg(ID_POS_ACK);
 
     reset <= '1';
 
@@ -130,7 +130,7 @@ begin
           "Exponent      => " & to_string(test_e, HEX, AS_IS, INCL_RADIX) & "\n" &
           "Modulus       => " & to_string(test_n, HEX, AS_IS, INCL_RADIX) & "\n\n" &
           
-          "_Base         => " & to_string(test_m_bar, HEX, AS_IS, INCL_RADIX) & "\n" &
+          "_M            => " & to_string(test_m_bar, HEX, AS_IS, INCL_RADIX) & "\n" &
           "_x            => " & to_string(test_x_bar, HEX, AS_IS, INCL_RADIX) & "\n"
         );
 

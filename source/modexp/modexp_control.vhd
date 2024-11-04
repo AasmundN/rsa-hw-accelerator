@@ -37,11 +37,11 @@ end entity modexp_control;
 architecture rtl of modexp_control is
 
   type state_type is (
-    waiting,                                       -- Input handshake
-    start,                                         -- Removes leading zeros from e shiftreg
-    monpro_xx, save_xx, monpro_mx, save_mx, shift, -- Repeated squaring
-    monpro_x1, save_x1,                            -- Prepare output
-    valid                                          -- Output handshake
+    waiting,                     -- Input handshake
+    start,                       -- Removes leading zeros from e shiftreg
+    monpro_xx, monpro_mx, shift, -- Repeated squaring
+    monpro_x1,                   -- Prepare output
+    valid                        -- Output handshake
   );
 
   signal state, state_next : state_type;
@@ -92,19 +92,15 @@ begin
         monpro_enable <= '1';
 
         if (monpro_output_valid = '1') then
-          state_next <= save_xx;
+          out_reg_enable <= '1';
+          monpro_enable  <= '0';
+          if (e_current_bit = '1') then
+            state_next <= monpro_mx;
+          else
+            state_next <= shift;
+          end if;
         else
           state_next <= monpro_xx;
-        end if;
-
-      when save_xx =>
-
-        out_reg_enable <= '1';
-
-        if (e_current_bit = '1') then
-          state_next <= monpro_mx;
-        else
-          state_next <= shift;
         end if;
 
       when monpro_mx =>
@@ -113,15 +109,12 @@ begin
         monpro_b_select <= "10";
 
         if (monpro_output_valid = '1') then
-          state_next <= save_mx;
+          out_reg_enable <= '1';
+          monpro_enable  <= '0';
+          state_next     <= shift;
         else
           state_next <= monpro_mx;
         end if;
-
-      when save_mx =>
-
-        out_reg_enable <= '1';
-        state_next     <= shift;
 
       when shift =>
 
@@ -139,15 +132,12 @@ begin
         monpro_b_select <= "01";
 
         if (monpro_output_valid = '1') then
-          state_next <= save_x1;
+          out_reg_enable <= '1';
+          monpro_enable  <= '0';
+          state_next     <= valid;
         else
           state_next <= monpro_x1;
         end if;
-
-      when save_x1 =>
-
-        out_reg_enable <= '1';
-        state_next     <= valid;
 
       when valid =>
 

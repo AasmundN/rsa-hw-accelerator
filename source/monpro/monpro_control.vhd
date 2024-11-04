@@ -36,10 +36,9 @@ end entity monpro_control;
 architecture rtl of monpro_control is
 
   type state_type is (
-    idle, start,               -- Wait and initialise states
-    add_b, add_n, shift, comp, -- Compute states
-    save,                      -- Save data state
-    valid                      -- Valid state
+    idle,                        -- Wait and initialise states
+    add_b, add_n, shift, reduce, -- Compute states
+    valid                        -- Valid state
   );
 
   signal state, state_next : state_type;
@@ -56,7 +55,7 @@ begin
 
     output_valid <= '0';
     alu_opcode   <= pass;
-    alu_a_select <= '0';
+    alu_a_select <= '1';
     alu_b_select <= '0';
 
     state_next <= idle;
@@ -68,16 +67,7 @@ begin
         shift_reg_enable <= '1';
 
         if (enable = '1') then
-          state_next <= start;
-        else
-          state_next <= idle;
-        end if;
-
-      when start =>
-
-        reset <= '1';
-
-        if (enable = '1') then
+          reset      <= '1';
           state_next <= add_b;
         else
           state_next <= idle;
@@ -89,77 +79,46 @@ begin
         out_reg_enable <= '1';
         alu_b_select   <= '1';
 
-        if (enable = '1') then
-          if (is_odd = '1') then
-            state_next <= add_n;
-          else
-            state_next <= shift;
-          end if;
+        if (is_odd = '1') then
+          state_next <= add_n;
         else
-          state_next <= idle;
+          shift_reg_shift_enable <= '1';
+          if (n_bit_is_last = '0') then
+            state_next <= add_b;
+          else
+            state_next <= reduce;
+          end if;
         end if;
 
       when add_n =>
 
-        alu_opcode     <= add;
-        out_reg_enable <= '1';
-
-        if (enable = '1') then
-          state_next <= shift;
-        else
-          state_next <= idle;
-        end if;
-
-      when shift =>
-
+        alu_opcode             <= add;
         out_reg_enable         <= '1';
+        alu_a_select           <= '0';
         shift_reg_shift_enable <= '1';
-        alu_a_select           <= '1';
 
-        if (enable = '1') then
-          if (n_bit_is_last = '0') then
-            state_next <= add_b;
-          else
-            state_next <= comp;
-          end if;
+        if (n_bit_is_last = '0') then
+          state_next <= add_b;
         else
-          state_next <= idle;
+          state_next <= reduce;
         end if;
 
-      when comp =>
+      when reduce =>
 
-        alu_opcode <= sub;
-
-        if (enable = '1') then
-          if (alu_less_than = '1') then
-            state_next <= valid;
-          else
-            state_next <= save;
-          end if;
-        else
-          state_next <= idle;
-        end if;
-
-      when save =>
-
-        alu_opcode     <= sub;
         out_reg_enable <= '1';
 
-        if (enable = '1') then
-          state_next <= valid;
+        if (alu_less_than = '0') then
+          alu_opcode <= sub;
         else
-          state_next <= idle;
+          alu_opcode <= pass;
         end if;
+
+        state_next <= valid;
 
       when valid =>
 
         output_valid <= '1';
-
-        if (enable = '1') then
-          state_next <= valid;
-        else
-          state_next <= idle;
-        end if;
+        state_next   <= idle;
 
       when others =>
 
@@ -170,7 +129,7 @@ begin
 
         output_valid <= '0';
         alu_opcode   <= pass;
-        alu_a_select <= '0';
+        alu_a_select <= '1';
         alu_b_select <= '0';
 
         state_next <= idle;
@@ -183,7 +142,11 @@ begin
   begin
 
     if (rising_edge(clk)) then
-      state <= state_next;
+      if (enable = '1') then
+        state <= state_next;
+      else
+        state <= idle;
+      end if;
     end if;
 
   end process update_state;
