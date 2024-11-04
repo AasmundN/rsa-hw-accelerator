@@ -11,7 +11,7 @@ library uvvm_util;
 
 entity monpro_tb is
   generic (
-    bit_width     : integer := 64;
+    bit_width     : integer := 256;
     test_set_size : integer := 100;
     clock_period  : time    := 1 ns
   );
@@ -21,7 +21,7 @@ architecture rtl of monpro_tb is
 
   -- Longest possible time to output valid (see state diagram):
   -- start states + loop states + end states
-  constant worst_time_to_valid : time := (1 + 3 * bit_width + 3) * clock_period;
+  constant worst_time_to_valid : integer := (1 + 3 * bit_width + 3);
 
   signal clk : std_logic;
 
@@ -116,17 +116,15 @@ begin
       wait until rising_edge(clk);
       enable <= '1';
 
-      await_value(output_valid, '1', clock_period, worst_time_to_valid, "Awaiting output valid");
+      await_value(output_valid, '1', clock_period, worst_time_to_valid * clock_period, "Awaiting output valid");
 
       wait until rising_edge(clk);
       enable <= '0';
 
       wait until rising_edge(clk);
-      check_value(result, expected_result, "Result");
+      check_value(result, expected_result, "Checking result");
 
     end loop;
-
-    log(ID_LOG_HDR_LARGE, "End of simulation");
 
     report_alert_counters(void);
 

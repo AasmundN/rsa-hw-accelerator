@@ -38,6 +38,7 @@ architecture rtl of modexp_control is
 
   type state_type is (
     waiting,                                       -- Input handshake
+    start,                                         -- Removes leading zeros from e shiftreg
     monpro_xx, save_xx, monpro_mx, save_mx, shift, -- Repeated squaring
     monpro_x1, save_x1,                            -- Prepare output
     valid                                          -- Output handshake
@@ -47,7 +48,7 @@ architecture rtl of modexp_control is
 
 begin
 
-  process (clk, reset) is
+  process (all) is
   begin
 
     in_ready               <= '0';
@@ -72,9 +73,18 @@ begin
         out_reg_in_select <= '1';
 
         if (in_valid = '1') then
-          state_next <= monpro_xx;
+          state_next <= start;
         else
           state_next <= waiting;
+        end if;
+
+      when start =>
+
+        if (e_current_bit = '1') then
+          state_next <= monpro_xx;
+        else
+          shift_reg_shift_enable <= '1';
+          state_next             <= start;
         end if;
 
       when monpro_xx =>

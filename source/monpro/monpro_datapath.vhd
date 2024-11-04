@@ -42,7 +42,9 @@ entity monpro_datapath is
     -----------------------------------------------------------------------------
     -- u(0) xor (a(i) and b(0))
     -----------------------------------------------------------------------------
-    is_odd : out   std_logic
+    is_odd : out   std_logic;
+
+    n_bit_is_last : out   std_logic
   );
 end entity monpro_datapath;
 
@@ -55,8 +57,11 @@ architecture rtl of monpro_datapath is
 
   -- The intermediary result of the calculation loop
   -- requires a size of bit_width + 2 (see monpro algorithm)
-  signal out_reg_r   : std_logic_vector(bit_width + 1 downto 0);
-  signal shift_reg_r : std_logic_vector(bit_width - 1 downto 0);
+  signal out_reg_r     : std_logic_vector(bit_width + 1 downto 0);
+  signal a_shift_reg_r : std_logic_vector(bit_width - 1 downto 0);
+
+  signal n_shift_reg_r  : std_logic_vector(bit_width - 1 downto 0);
+  signal n_shift_reg_in : std_logic_vector(bit_width - 1 downto 0);
 
   -- Output from bit shifter
   signal out_reg_right_shifted : std_logic_vector(bit_width + 1 downto 0);
@@ -68,8 +73,9 @@ architecture rtl of monpro_datapath is
 
 begin
 
-  result <= out_reg_r(bit_width - 1 downto 0);
-  is_odd <= out_reg_r(0) xor (operand_b(0) and shift_reg_r(0));
+  result        <= out_reg_r(bit_width - 1 downto 0);
+  is_odd        <= out_reg_r(0) xor (operand_b(0) and a_shift_reg_r(0));
+  n_bit_is_last <= n_shift_reg_r(0);
 
   alu : entity work.alu(rtl)
     generic map (
@@ -101,7 +107,7 @@ begin
     )
     port map (
       signal_in       => operand_b,
-      set_mask_values => shift_reg_r(0),
+      set_mask_values => a_shift_reg_r(0),
 
       signal_out => and_b_a
     );
@@ -115,6 +121,15 @@ begin
       a1  => "00" & and_b_a,
       b   => alu_b,
       sel => alu_b_select
+    );
+
+  msb_bitscanner : entity work.msb_bitscanner
+    generic map (
+      bit_width => bit_width
+    )
+    port map (
+      signal_in  => modulus,
+      signal_out => n_shift_reg_in
     );
 
   -- Right shift one bit
@@ -143,11 +158,13 @@ begin
 
     if rising_edge(clk) then
       if (shift_reg_enable = '1') then
-        shift_reg_r <= operand_a;
+        a_shift_reg_r <= operand_a;
+        n_shift_reg_r <= n_shift_reg_in;
       -- Shift register content
       elsif (shift_reg_shift_enable = '1') then
         -- Nono?
-        shift_reg_r <= '0' & shift_reg_r(bit_width - 1 downto 1);
+        a_shift_reg_r <= '0' & a_shift_reg_r(bit_width - 1 downto 1);
+        n_shift_reg_r <= '0' & n_shift_reg_r(bit_width - 1 downto 1);
       end if;
     end if;
 

@@ -56,7 +56,8 @@ architecture rtl of monpro is
   signal shift_reg_shift_enable : std_logic;
 
   -- Used during execution of algorithm
-  signal is_odd : std_logic;
+  signal is_odd        : std_logic;
+  signal n_bit_is_last : std_logic;
 
 begin
 
@@ -78,19 +79,18 @@ begin
       operand_a              => operand_a,
       operand_b              => operand_b,
       result                 => result,
-      is_odd                 => is_odd
+      is_odd                 => is_odd,
+      n_bit_is_last          => n_bit_is_last
     );
 
   control : entity work.monpro_control(rtl)
-    generic map (
-      bit_width => bit_width
-    )
     port map (
       clk                    => clk,
       reset                  => reset,
       enable                 => enable,
       alu_less_than          => alu_less_than,
       is_odd                 => is_odd,
+      n_bit_is_last          => n_bit_is_last,
       out_reg_enable         => out_reg_enable,
       shift_reg_enable       => shift_reg_enable,
       shift_reg_shift_enable => shift_reg_shift_enable,
