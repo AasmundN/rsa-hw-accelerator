@@ -50,7 +50,7 @@ entity modexp_datapath is
     -----------------------------------------------------------------------------
     out_reg_in_select : in    std_logic_vector(1 downto 0);
     monpro_b_select   : in    std_logic_vector(1 downto 0);
-    m_reg_in_select : in      std_logic_vector(1 downto 0);
+    m_reg_in_select : in      std_logic;
 
     -----------------------------------------------------------------------------
     -- Monpro control signals
