@@ -21,10 +21,10 @@ entity modexp is
     -----------------------------------------------------------------------------
     -- Operands of modular exponentiation
     -----------------------------------------------------------------------------
-    operand_m : in    std_logic_vector(bit_width - 1 downto 0);
-    operand_x_bar : in    std_logic_vector(bit_width - 1 downto 0);
-    operand_e     : in    std_logic_vector(bit_width - 1 downto 0);
-    operand_r_sq_modn : in std_logic_vector(bit_width - 1 downto 0);
+    operand_m         : in    std_logic_vector(bit_width - 1 downto 0);
+    operand_x_bar     : in    std_logic_vector(bit_width - 1 downto 0);
+    operand_e         : in    std_logic_vector(bit_width - 1 downto 0);
+    operand_r_sq_modn : in    std_logic_vector(bit_width - 1 downto 0);
 
     -----------------------------------------------------------------------------
     -- Result of calculation
@@ -57,7 +57,6 @@ architecture rtl of modexp is
   signal out_reg_in_select : std_logic_vector(1 downto 0);
   signal monpro_b_select   : std_logic_vector(1 downto 0);
   signal m_reg_in_select   : std_logic;
-  
 
   -- Monpro control
   signal monpro_enable       : std_logic;
@@ -73,10 +72,10 @@ begin
       clk                    => clk,
       reset                  => reset,
       modulus                => modulus,
-      operand_m          => operand_m,
+      operand_m              => operand_m,
       operand_x_bar          => operand_x_bar,
       operand_e              => operand_e,
-      operand_r_sq_modn => operand_r_sq_modn,
+      operand_r_sq_modn      => operand_r_sq_modn,
       result                 => result,
       out_reg_enable         => out_reg_enable,
       shift_reg_enable       => shift_reg_enable,

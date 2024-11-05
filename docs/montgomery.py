@@ -52,20 +52,20 @@ def mod_exp(M, e, n):
 
 def main():
     bitsize = 512
-    m = 20384723984723912834729387428934
+    m = 0x019259187
 
     _, privkey = rsa.newkeys(bitsize)
 
-    e = privkey.e
-    d = privkey.d
-    n = privkey.n
+    e = 0x01BD95573
+    n = 0x0253B1447
 
     encrypted = mod_exp(m, e, n)
-    decrypted = mod_exp(encrypted, d, n)
+    #decrypted = mod_exp(encrypted, d, n)
 
-    print("Message: ", m)
-    print("Encrypted: ", encrypted)
-    print("Decrypted: ", decrypted)
+    print("Message: ", hex(m))
+    print("Monpro: ", hex(mon_pro(0x19259187, 0x1D5FE4F2, 0x253B1447)))
+    #print("Encrypted: ", hex(encrypted))
+    #print("Decrypted: ", decrypted)
 
 
 if __name__ == "__main__":
