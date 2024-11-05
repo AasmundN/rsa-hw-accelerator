@@ -28,10 +28,6 @@ entity rsa_core_control is
     modexp_out_valid : in    std_logic;
 
     -- Internal register control
-    is_msg_last_latch_enable : out   std_logic;
-    in_reg_enable            : out   std_logic;
-    m_reg_enable             : out   std_logic;
-    out_reg_enable           : out   std_logic
   );
 end entity rsa_core_control;
 
