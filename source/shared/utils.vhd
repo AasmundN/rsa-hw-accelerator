@@ -6,8 +6,16 @@ package utils is
 
   type alu_opcode_t is (pass, add, sub);
 
+  -- Returns a zeroed logic vector where the most significant (non-zero) bit of "a" is preserved
+
   function bitscanner (
     a : std_logic_vector
+  ) return std_logic_vector;
+
+  -- Reverses the bit order of a logic vector
+
+  function flip_logic_vector (
+    vec : std_logic_vector
   ) return std_logic_vector;
 
   -- Calculate Mongomery product
@@ -49,22 +57,42 @@ package body utils is
   ) return std_logic_vector
     is
 
-    variable temp_output : std_logic_vector(a'range) := (others => '0');
+    variable a_flipped          : std_logic_vector(a'range) := flip_logic_vector(a);
+    variable a_flipped_inverted : std_logic_vector(a'range) := (others => '0');
+
+    variable flipped_result : std_logic_vector(a'range) := (others => '0');
+    variable result         : std_logic_vector(a'range) := (others => '0');
 
   begin
 
-    for i in a'range loop
+    -- Step 1: result_flipped = a_flipped AND ((NOT a_flipped) + 1)
+    a_flipped_inverted := not a_flipped;
+    flipped_result     := a_flipped and std_logic_vector(unsigned(a_flipped_inverted) + 1);
 
-      if (a(i) = '1') then
-        temp_output(i) := '1';
-        exit;
-      end if;
+    -- Step 2: Flip(result_flipped)
+    result := flip_logic_vector(flipped_result);
+
+    return result;
+
+  end function bitscanner;
+
+  function flip_logic_vector (
+    vec : std_logic_vector
+  ) return std_logic_vector is
+
+    variable vec_flipped : std_logic_vector(vec'range) := ((others => '0'));
+
+  begin
+
+    for i in vec'range loop
+
+      vec_flipped(i) := vec(vec'high - i + vec'low);
 
     end loop;
 
-    return temp_output;
+    return vec_flipped;
 
-  end function bitscanner;
+  end function flip_logic_vector;
 
   function monpro (
     a,
