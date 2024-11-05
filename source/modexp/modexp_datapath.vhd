@@ -48,8 +48,9 @@ entity modexp_datapath is
     -----------------------------------------------------------------------------
     -- MUX selection
     -----------------------------------------------------------------------------
-    out_reg_in_select : in    std_logic;
+    out_reg_in_select : in    std_logic(1 downto 0);
     monpro_b_select   : in    std_logic_vector(1 downto 0);
+    m_reg_in_select : in std_logic(1 downto 0);
 
     -----------------------------------------------------------------------------
     -- Monpro control signals
@@ -65,6 +66,8 @@ architecture rtl of modexp_datapath is
   signal monpro_out  : std_logic_vector(bit_width - 1 downto 0);
   signal monpro_b_in : std_logic_vector(bit_width - 1 downto 0);
   signal out_reg_in  : std_logic_vector(bit_width - 1 downto 0);
+  signal m_reg_in  : std_logic_vector(bit_width - 1 downto 0);
+  
 
   -- Internal registers
   signal out_reg_r    : std_logic_vector(bit_width - 1 downto 0);
@@ -116,6 +119,17 @@ begin
       sel => monpro_b_select
     );
 
+  m_mux : entity work.mux_2to1(rtl)
+  generic map (
+    bit_width => bit_width
+  )
+  port map (
+    a0  => out_reg_r,
+    a1  => operand_m,
+    b   => m_reg_in,
+    sel => m_reg_in_select
+  );
+
   out_reg : process (clk, reset, out_reg_enable, out_reg_in) is
   begin
 
@@ -134,7 +148,7 @@ begin
 
     if rising_edge(clk) then
       if (m_reg_enable = '1') then
-        m_reg_r <= operand_m;
+        m_reg_r <= m_reg_in;
       end if;
     end if;
 
