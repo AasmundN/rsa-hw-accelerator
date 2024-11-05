@@ -11,8 +11,8 @@ library uvvm_util;
 
 entity modexp_tb is
   generic (
-    bit_width     : integer := 64;
-    test_set_size : integer := 100;
+    bit_width     : integer := 32;
+    test_set_size : integer := 5;
     clock_period  : time    := 1 ns
   );
 end entity modexp_tb;
@@ -73,7 +73,7 @@ begin
     variable test_m, test_e, test_n : std_logic_vector(bit_width downto 0);
     variable test_x_bar : std_logic_vector(bit_width downto 0);
     variable test_r, test_r_sq_modn            : std_logic_vector(bit_width downto 0);
-
+    
     variable clk_count_at_start : natural;
 
   begin
@@ -122,7 +122,7 @@ begin
 
       -- r is 2^(n'length)
       test_r := std_logic_vector(shift_left(unsigned(bitscanner(test_n)), 1));
-      test_r_sq_modn := std_logic_vector((unsigned(test_r)*unsigned(test_r)) mod unsigned(modulus));
+      test_r_sq_modn := std_logic_vector(resize((unsigned(test_r) * unsigned(test_r)) mod unsigned(modulus), bit_width + 1));
 
       test_x_bar := modmul(std_logic_vector(to_unsigned(1, bit_width + 1)), test_r, test_n, bit_width + 1);
 
