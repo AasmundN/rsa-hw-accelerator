@@ -38,9 +38,9 @@ end entity modexp_control;
 architecture rtl of modexp_control is
 
   type state_type is (
-    waiting,                     -- Input handshake
-    m_bar,
-    x_bar,
+    waiting,                     -- Input handshake, set m and r_sq_modn in respective registers
+    m_bar,                       -- calculate m_bar and place in m_reg 
+    x_bar,                       -- select x_bar in mux and place in out_reg
     start,                       -- Removes leading zeros from e shiftreg
     monpro_xx, monpro_mx, shift, -- Repeated squaring
     monpro_x1,                   -- Prepare output
@@ -89,8 +89,6 @@ begin
 
         if (monpro_output_valid = '1') then
           monpro_enable <= '0';
-          out_reg_in_select <= "00";
-          m_reg_in_select   <= '0'
           m_reg_enable      <= '1';
           out_reg_enable     <= '1';
           state_next             <= x_bar;
@@ -98,8 +96,10 @@ begin
           state_next <= m_bar;
         end if;
         
-      when x_bar =>        
-
+      when x_bar =>
+        out_reg_in_select <= "01";
+        out_reg_enable <= '1';
+        state_next <= start;
 
       when start =>
 
