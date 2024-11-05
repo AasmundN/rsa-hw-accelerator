@@ -25,8 +25,9 @@ entity modexp_control is
     e_bit_is_last : in    std_logic;
 
     -- MUX control
-    out_reg_in_select : out   std_logic;
-    monpro_b_select   : out   std_logic_vector(1 downto 0);
+    out_reg_in_select : in    std_logic(1 downto 0);
+    monpro_b_select   : in    std_logic_vector(1 downto 0);
+    m_reg_in_select : in std_logic(1 downto 0);
 
     -- Monpro control
     monpro_enable       : out   std_logic;
@@ -38,6 +39,8 @@ architecture rtl of modexp_control is
 
   type state_type is (
     waiting,                     -- Input handshake
+    m_bar,
+    x_bar,
     start,                       -- Removes leading zeros from e shiftreg
     monpro_xx, monpro_mx, shift, -- Repeated squaring
     monpro_x1,                   -- Prepare output
@@ -57,7 +60,8 @@ begin
     shift_reg_enable       <= '0';
     shift_reg_shift_enable <= '0';
     m_reg_enable           <= '0';
-    out_reg_in_select      <= '0';
+    out_reg_in_select      <= "00";
+    m_reg_in_select        <= '0';
     monpro_b_select        <= "00";
     monpro_enable          <= '0';
     state_next             <= waiting;
@@ -70,13 +74,32 @@ begin
         m_reg_enable      <= '1';
         out_reg_enable    <= '1';
         shift_reg_enable  <= '1';
-        out_reg_in_select <= '1';
+        out_reg_in_select <= "10";
+        m_reg_in_select   <= '1';
 
         if (in_valid = '1') then
-          state_next <= start;
+          state_next <= m_bar;
         else
           state_next <= waiting;
         end if;
+
+      when m_bar =>
+        monpro_b_select <= "10";          
+        monpro_enable <= '1';
+
+        if (monpro_output_valid = '1') then
+          monpro_enable <= '0';
+          out_reg_in_select <= "00";
+          m_reg_in_select   <= '0'
+          m_reg_enable      <= '1';
+          out_reg_enable     <= '1';
+          state_next             <= x_bar;
+        else
+          state_next <= m_bar;
+        end if;
+        
+      when x_bar =>        
+
 
       when start =>
 
