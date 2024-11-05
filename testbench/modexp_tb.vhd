@@ -2,6 +2,7 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
+
 library uvvm_util;
   context uvvm_util.uvvm_util_context;
 
@@ -31,9 +32,10 @@ architecture func of modexp_tb is
   signal reset : std_logic;
 
   signal modulus       : std_logic_vector(bit_width - 1 downto 0);
-  signal operand_m_bar : std_logic_vector(bit_width - 1 downto 0);
+  signal operand_m : std_logic_vector(bit_width - 1 downto 0);
   signal operand_x_bar : std_logic_vector(bit_width - 1 downto 0);
   signal operand_e     : std_logic_vector(bit_width - 1 downto 0);
+  signal operand_r_sq_modn : std_logic_vector(bit_width - 1 downto 0);
 
   signal result : std_logic_vector(bit_width - 1 downto 0);
 
@@ -53,9 +55,10 @@ begin
       clk           => clk,
       reset         => reset,
       modulus       => modulus,
-      operand_m_bar => operand_m_bar,
+      operand_m => operand_m,
       operand_x_bar => operand_x_bar,
       operand_e     => operand_e,
+      operand_r_sq_modn => operand_r_sq_modn,
       result        => result,
       in_valid      => in_valid,
       in_ready      => in_ready,
@@ -68,8 +71,8 @@ begin
     variable expected_result : std_logic_vector(bit_width - 1 downto 0);
 
     variable test_m, test_e, test_n : std_logic_vector(bit_width downto 0);
-    variable test_m_bar, test_x_bar : std_logic_vector(bit_width downto 0);
-    variable test_r                 : std_logic_vector(bit_width downto 0);
+    variable test_x_bar : std_logic_vector(bit_width downto 0);
+    variable test_r, test_r_sq_modn            : std_logic_vector(bit_width downto 0);
 
     variable clk_count_at_start : natural;
 
@@ -119,8 +122,8 @@ begin
 
       -- r is 2^(n'length)
       test_r := std_logic_vector(shift_left(unsigned(bitscanner(test_n)), 1));
+      test_r_sq_modn := std_logic_vector((unsigned(test_r)*unsigned(test_r)) mod unsigned(modulus));
 
-      test_m_bar := modmul(test_m, test_r, test_n, bit_width + 1);
       test_x_bar := modmul(std_logic_vector(to_unsigned(1, bit_width + 1)), test_r, test_n, bit_width + 1);
 
       expected_result := modexp(test_m, test_e, test_n)(expected_result'range);
@@ -130,7 +133,6 @@ begin
           "Exponent      => " & to_string(test_e, HEX, AS_IS, INCL_RADIX) & "\n" &
           "Modulus       => " & to_string(test_n, HEX, AS_IS, INCL_RADIX) & "\n\n" &
           
-          "_M            => " & to_string(test_m_bar, HEX, AS_IS, INCL_RADIX) & "\n" &
           "_x            => " & to_string(test_x_bar, HEX, AS_IS, INCL_RADIX) & "\n"
         );
 
@@ -138,9 +140,10 @@ begin
 
       -- Apply tests to DUT
 
-      operand_m_bar <= test_m_bar(operand_m_bar'range);
+      operand_m <= test_m(operand_m'range);
       operand_x_bar <= test_x_bar(operand_x_bar'range);
       operand_e     <= test_e(operand_e'range);
+      operand_r_sq_modn <= test_r_sq_modn(operand_r_sq_modn'range);
       modulus       <= test_n(modulus'range);
 
       -- Perform input handshake
