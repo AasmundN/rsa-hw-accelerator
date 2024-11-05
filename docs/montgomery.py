@@ -31,39 +31,16 @@ def mon_pro(A, B, n):
     return u
 
 
-# modular multiplication
-# using Blakley's method
-def mod_mul(A, B, n):
-    A_bits = bitfield(A)
-
-    R = 0
-
-    for A_bit in A_bits:
-        R = 2 * R + A_bit * B
-
-        # R <= 4n - 2
-
-        if R >= n:
-            R -= n
-
-        if R >= n:
-            R -= n
-
-        if R >= n:
-            R -= n
-
-    return R
-
-
 # Montgomery exponentiation
 def mod_exp(M, e, n):
     e_bits = bitfield(e)
 
     k = n.bit_length()
     r = 1 << k  # r = 2^k
+    r2 = r ** 2 % n
 
-    _M = mod_mul(M, r, n)
-    _x = mod_mul(1, r, n)
+    _M = mon_pro(M, r2, n)
+    _x = mon_pro(1, r2, n)
 
     for e_bit in e_bits:
         _x = mon_pro(_x, _x, n)
