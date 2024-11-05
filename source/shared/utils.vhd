@@ -48,6 +48,10 @@ package utils is
     n : std_logic_vector
   ) return std_logic_vector;
 
+  function log2ceil (
+    n : integer
+  ) return integer;
+
 end package utils;
 
 package body utils is
@@ -195,5 +199,27 @@ package body utils is
     return c;
 
   end function modexp;
+
+  -- Calculates the ceiling of the base-2 logarithm for a given "n"
+
+  function log2ceil (
+    n : integer
+  ) return integer is
+
+    variable result : integer := 0;
+    variable temp   : integer := n - 1;
+
+  begin
+
+    while temp > 0 loop
+
+      temp   := temp / 2;
+      result := result + 1;
+
+    end loop;
+
+    return result;
+
+  end function log2ceil;
 
 end package body utils;
