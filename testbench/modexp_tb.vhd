@@ -122,7 +122,7 @@ begin
 
       -- r is 2^(n'length)
       test_r := std_logic_vector(shift_left(unsigned(bitscanner(test_n)), 1));
-      test_r_sq_modn := std_logic_vector(resize((unsigned(test_r) * unsigned(test_r)) mod unsigned(modulus), bit_width + 1));
+      test_r_sq_modn := modmul(test_r,test_r, test_n, bit_width + 1);
 
       test_x_bar := modmul(std_logic_vector(to_unsigned(1, bit_width + 1)), test_r, test_n, bit_width + 1);
 
