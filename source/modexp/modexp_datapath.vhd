@@ -21,9 +21,10 @@ entity modexp_datapath is
     -----------------------------------------------------------------------------
     -- Operands of modular exponentiation
     -----------------------------------------------------------------------------
-    operand_m_bar : in    std_logic_vector(bit_width - 1 downto 0);
+    operand_m : in    std_logic_vector(bit_width - 1 downto 0);
     operand_x_bar : in    std_logic_vector(bit_width - 1 downto 0);
     operand_e     : in    std_logic_vector(bit_width - 1 downto 0);
+    operand_r_sq_modn : in std_logic_vector(bit_width - 1 downto 0);
 
     -----------------------------------------------------------------------------
     -- Result of calculation
@@ -91,13 +92,14 @@ begin
       output_valid => monpro_output_valid
     );
 
-  out_reg_in_mux : entity work.mux_2to1(rtl)
+  out_reg_in_mux : entity work.mux_3to1(rtl)
     generic map (
       bit_width => bit_width
     )
     port map (
       a0  => monpro_out,
       a1  => operand_x_bar,
+      a2  => operand_r_sq_modn,
       b   => out_reg_in,
       sel => out_reg_in_select
     );
@@ -127,12 +129,12 @@ begin
 
   end process out_reg;
 
-  m_reg : process (clk, m_reg_enable, operand_m_bar) is
+  m_reg : process (clk, m_reg_enable, operand_m) is
   begin
 
     if rising_edge(clk) then
       if (m_reg_enable = '1') then
-        m_reg_r <= operand_m_bar;
+        m_reg_r <= operand_m;
       end if;
     end if;
 
