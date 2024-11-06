@@ -42,9 +42,6 @@ architecture rtl of rsa_core_input_control is
 begin
 
   main_process : process (all) is
-
-    variable core_index : integer;
-
   begin
 
     msgin_ready           <= '0';
@@ -52,6 +49,7 @@ begin
     in_reg_enable         <= '0';
     in_is_last_reg_enable <= '0';
     inc_core_id_counter   <= '0';
+    next_state            <= receive_message;
 
     case(state) is
 
@@ -69,11 +67,9 @@ begin
 
       when assign_message =>
 
-        core_index := to_integer(unsigned(core_id_counter_reg_r));
+        modexp_in_valid(to_integer(unsigned(core_id_counter_reg_r))) <= '1';
 
-        modexp_in_valid(core_index) <= '1';
-
-        if (modexp_in_ready(core_index) = '1') then
+        if (modexp_in_ready(to_integer(unsigned(core_id_counter_reg_r))) = '1') then
           inc_core_id_counter <= '1';
           next_state          <= receive_message;
         else
@@ -105,7 +101,7 @@ begin
 
   end process update_state;
 
-  update_counter : process (all) is
+  update_counter : process (clk) is
   begin
 
     if (rising_edge(clk)) then

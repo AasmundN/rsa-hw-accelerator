@@ -44,9 +44,6 @@ begin
   current_core_id <= core_id_counter_reg_r;
 
   main_process : process (all) is
-
-    variable core_index : integer;
-
   begin
 
     msgout_valid           <= '0';
@@ -54,16 +51,15 @@ begin
     out_reg_enable         <= '0';
     out_is_last_reg_enable <= '0';
     inc_core_id_counter    <= '0';
+    next_state             <= receive_message;
 
     case(state) is
 
       when receive_message =>
 
-        core_index := to_integer(unsigned(core_id_counter_reg_r));
+        modexp_out_ready(to_integer(unsigned(core_id_counter_reg_r))) <= '1';
 
-        modexp_out_ready(core_index) <= '1';
-
-        if (modexp_out_valid(core_index) = '1') then
+        if (modexp_out_valid(to_integer(unsigned(core_id_counter_reg_r))) = '1') then
           out_reg_enable         <= '1';
           out_is_last_reg_enable <= '1';
           inc_core_id_counter    <= '1';
