@@ -1,4 +1,5 @@
 build
+rsa-hw-accelerator
 .DS_Store
 .conform*
 .vscode
