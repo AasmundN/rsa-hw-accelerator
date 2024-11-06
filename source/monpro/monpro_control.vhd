@@ -45,7 +45,7 @@ architecture rtl of monpro_control is
 
 begin
 
-  main_state_process : process (all) is
+  main_state_process : process (state, enable, is_odd, n_bit_is_last, alu_less_than) is
   begin
 
     out_reg_enable         <= '0';
@@ -138,7 +138,7 @@ begin
 
   end process main_state_process;
 
-  update_state : process (reset, clk) is
+  update_state : process (clk) is
   begin
 
     if (rising_edge(clk)) then

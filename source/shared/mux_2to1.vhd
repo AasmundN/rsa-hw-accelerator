@@ -23,7 +23,7 @@ architecture rtl of mux_2to1 is
 
 begin
 
-  process (all) is
+  process (a0, a1, sel) is
   begin
 
     case(sel) is
