@@ -1,6 +1,8 @@
 library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
+
+  -- Utils
   use work.utils.all;
 
 entity rsa_core_input_control is
@@ -34,15 +36,12 @@ architecture rtl of rsa_core_input_control is
 
   signal state, next_state : state_type;
 
-  signal core_id_counter_reg : std_logic_vector(get_bit_width(num_cores) - 1 downto 0);
-  signal inc_core_id_counter : std_logic;
+  signal core_id_counter_reg_r : std_logic_vector(get_bit_width(num_cores) - 1 downto 0);
+  signal inc_core_id_counter   : std_logic;
 
 begin
 
   main_process : process (all) is
-
-    variable core_index : integer;
-
   begin
 
     msgin_ready           <= '0';
@@ -50,6 +49,7 @@ begin
     in_reg_enable         <= '0';
     in_is_last_reg_enable <= '0';
     inc_core_id_counter   <= '0';
+    next_state            <= receive_message;
 
     case(state) is
 
@@ -67,16 +67,13 @@ begin
 
       when assign_message =>
 
-        core_index := to_integer(unsigned(core_id_counter_reg_r));
+        modexp_in_valid(to_integer(unsigned(core_id_counter_reg_r))) <= '1';
 
-        modexp_in_valid(core_index) <= '1';
-
-          if (modexp_in_ready(core_index) = '1') then
-            inc_core_id_counter <= '1';
-            next_state          <= receive_message;
-          else
-            next_state <= assign_message;
-          end if;
+        if (modexp_in_ready(to_integer(unsigned(core_id_counter_reg_r))) = '1') then
+          inc_core_id_counter <= '1';
+          next_state          <= receive_message;
+        else
+          next_state <= assign_message;
         end if;
 
       when others =>
@@ -104,21 +101,21 @@ begin
 
   end process update_state;
 
-  update_counter : process (all) is
-    begin
-  
-      if (rising_edge(clk)) then
-        if (reset = '1') then
+  update_counter : process (clk) is
+  begin
+
+    if (rising_edge(clk)) then
+      if (reset = '1') then
+        core_id_counter_reg_r <= (others => '0');
+      elsif (inc_core_id_counter = '1') then
+        core_id_counter_reg_r <= std_logic_vector(unsigned(core_id_counter_reg_r) + 1);
+
+        if (unsigned(core_id_counter_reg_r) >= num_cores) then
           core_id_counter_reg_r <= (others => '0');
-        elsif (inc_core_id_counter = '1') then
-          core_id_counter_reg_r <= std_logic_vector(unsigned(core_id_counter_reg_r) + 1);
-  
-          if (unsigned(core_id_counter_reg_r) >= num_cores) then
-            core_id_counter_reg_r <= (others => '0');
-          end if;
         end if;
       end if;
-  
-    end process update_counter;
+    end if;
+
+  end process update_counter;
 
 end architecture rtl;

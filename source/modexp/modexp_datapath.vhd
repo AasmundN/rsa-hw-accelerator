@@ -14,22 +14,24 @@ entity modexp_datapath is
     reset : in    std_logic;
 
     -----------------------------------------------------------------------------
-    -- Modulus (n) of the modulo operation
+    -- Precomputed values used to convert operands to Montgomery form
     -----------------------------------------------------------------------------
-    modulus : in    std_logic_vector(bit_width - 1 downto 0);
+    r_mod_n  : in    std_logic_vector(bit_width - 1 downto 0);
+    r2_mod_n : in    std_logic_vector(bit_width - 1 downto 0);
 
     -----------------------------------------------------------------------------
     -- Operands of modular exponentiation
     -----------------------------------------------------------------------------
-    operand_m         : in    std_logic_vector(bit_width - 1 downto 0);
-    operand_x_bar     : in    std_logic_vector(bit_width - 1 downto 0);
-    operand_e         : in    std_logic_vector(bit_width - 1 downto 0);
-    operand_r_sq_modn : in    std_logic_vector(bit_width - 1 downto 0);
+    base       : in    std_logic_vector(bit_width - 1 downto 0);
+    exponent   : in    std_logic_vector(bit_width - 1 downto 0);
+    modulus    : in    std_logic_vector(bit_width - 1 downto 0);
+    in_is_last : in    std_logic;
 
     -----------------------------------------------------------------------------
     -- Result of calculation
     -----------------------------------------------------------------------------
-    result : out   std_logic_vector(bit_width - 1 downto 0);
+    result      : out   std_logic_vector(bit_width - 1 downto 0);
+    out_is_last : out   std_logic;
 
     -----------------------------------------------------------------------------
     -- Internal register control
@@ -38,6 +40,7 @@ entity modexp_datapath is
     shift_reg_enable       : in    std_logic;
     shift_reg_shift_enable : in    std_logic;
     m_reg_enable           : in    std_logic;
+    is_last_reg_enable     : in    std_logic;
 
     -----------------------------------------------------------------------------
     -- Serial output of shift registers
@@ -69,16 +72,18 @@ architecture rtl of modexp_datapath is
   signal m_reg_in    : std_logic_vector(bit_width - 1 downto 0);
 
   -- Internal registers
-  signal out_reg_r    : std_logic_vector(bit_width - 1 downto 0);
-  signal m_reg_r      : std_logic_vector(bit_width - 1 downto 0);
-  signal e_reg_r      : std_logic_vector(bit_width - 1 downto 0);
-  signal e_last_reg_r : std_logic_vector(bit_width - 1 downto 0);
+  signal out_reg_r     : std_logic_vector(bit_width - 1 downto 0);
+  signal m_reg_r       : std_logic_vector(bit_width - 1 downto 0);
+  signal e_reg_r       : std_logic_vector(bit_width - 1 downto 0);
+  signal e_last_reg_r  : std_logic_vector(bit_width - 1 downto 0);
+  signal is_last_reg_r : std_logic;
 
 begin
 
   result        <= out_reg_r;
   e_current_bit <= e_reg_r(e_reg_r'left);
   e_bit_is_last <= e_last_reg_r(e_last_reg_r'left);
+  out_is_last   <= is_last_reg_r;
 
   monpro : entity work.monpro(rtl)
     generic map (
@@ -100,8 +105,8 @@ begin
     )
     port map (
       a0  => monpro_out,
-      a1  => operand_x_bar,
-      a2  => operand_r_sq_modn,
+      a1  => r_mod_n,
+      a2  => r2_mod_n,
       b   => out_reg_in,
       sel => out_reg_in_select
     );
@@ -124,7 +129,7 @@ begin
     )
     port map (
       a0  => out_reg_r,
-      a1  => operand_m,
+      a1  => base,
       b   => m_reg_in,
       sel => m_reg_in_select
     );
@@ -142,7 +147,7 @@ begin
 
   end process out_reg;
 
-  m_reg : process (clk, m_reg_enable, operand_m) is
+  m_reg : process (clk, m_reg_enable, base) is
   begin
 
     if rising_edge(clk) then
@@ -153,12 +158,23 @@ begin
 
   end process m_reg;
 
-  shift_regs : process (clk, operand_e, e_reg_r, e_last_reg_r, shift_reg_enable, shift_reg_shift_enable) is
+  is_last_reg : process (clk, m_reg_enable, base) is
+  begin
+
+    if rising_edge(clk) then
+      if (is_last_reg_enable = '1') then
+        is_last_reg_r <= in_is_last;
+      end if;
+    end if;
+
+  end process is_last_reg;
+
+  shift_regs : process (clk, exponent, e_reg_r, e_last_reg_r, shift_reg_enable, shift_reg_shift_enable) is
   begin
 
     if rising_edge(clk) then
       if (shift_reg_enable = '1') then
-        e_reg_r      <= operand_e;
+        e_reg_r      <= exponent;
         e_last_reg_r <= std_logic_vector(to_unsigned(1, bit_width));
       elsif (shift_reg_shift_enable = '1') then
         e_reg_r      <= e_reg_r(bit_width - 2 downto 0) & '0';
