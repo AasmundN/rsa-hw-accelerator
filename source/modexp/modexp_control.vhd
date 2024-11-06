@@ -52,7 +52,7 @@ architecture rtl of modexp_control is
 
 begin
 
-  process (all) is
+  process (state, in_valid, monpro_output_valid, e_current_bit, e_bit_is_last, out_ready) is
   begin
 
     in_ready               <= '0';

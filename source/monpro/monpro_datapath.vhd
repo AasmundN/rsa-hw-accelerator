@@ -71,7 +71,13 @@ architecture rtl of monpro_datapath is
   signal alu_b      : std_logic_vector(bit_width + 1 downto 0);
   signal alu_result : std_logic_vector(bit_width + 1 downto 0);
 
+  signal alu_b_mux_a0_intermediary : std_logic_vector(bit_width + 1 downto 0);
+  signal alu_b_mux_a1_intermediary : std_logic_vector(bit_width + 1 downto 0);
+
 begin
+
+  alu_b_mux_a0_intermediary <= "00" & modulus;
+  alu_b_mux_a1_intermediary <= "00" & and_b_a;
 
   result        <= out_reg_r(bit_width - 1 downto 0);
   is_odd        <= alu_a(0) xor (operand_b(0) and a_shift_reg_r(0));
@@ -117,8 +123,8 @@ begin
       bit_width => bit_width + 2
     )
     port map (
-      a0  => "00" & modulus,
-      a1  => "00" & and_b_a,
+      a0  => alu_b_mux_a0_intermediary,
+      a1  => alu_b_mux_a1_intermediary,
       b   => alu_b,
       sel => alu_b_select
     );

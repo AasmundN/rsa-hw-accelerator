@@ -25,7 +25,7 @@ architecture rtl of mux_3to1 is
 
 begin
 
-  process (all) is
+  process (a0, a1, a2, sel) is
   begin
 
     case(sel) is
