@@ -8,9 +8,9 @@ source -notrace [file normalize "${origin_dir}/../procedures.tcl"]
 # Set the project name
 set _xil_proj_name_ "rsa-hw-accelerator"
 #top level design module
-set top_design $_xil_proj_name_
+set top_design "rsa_core"
 #top leves simulation module
-set top_design_testbench "${top_design}_tb"
+set top_design_testbench ${top_design}
 #directory for user IPs
 set IP_directory ""
 
@@ -18,6 +18,9 @@ set IP_directory ""
 #source for to be included in synthesis
 set source_files [list \
 	{*}[glob -nocomplain -directory [file normalize "$origin_dir/source/"] -type f *] \
+	{*}[glob -nocomplain -directory [file normalize "$origin_dir/source/modexp/"] -type f *] \
+	{*}[glob -nocomplain -directory [file normalize "$origin_dir/source/monpro/"] -type f *] \
+	{*}[glob -nocomplain -directory [file normalize "$origin_dir/source/shared/"] -type f *] \
 	{*}[include_from_file $origin_dir [file normalize "$origin_dir/include.txt"]] \
 ]
 
