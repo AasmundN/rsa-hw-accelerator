@@ -86,7 +86,7 @@ begin
 
   modexp_cores : for i in 0 to num_cores - 1 generate
 
-    modexp_i : component modexp
+    modexp_core : component modexp
       generic map (
         bit_width => bit_width
       )
