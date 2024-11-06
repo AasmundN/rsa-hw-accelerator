@@ -30,11 +30,11 @@ architecture func of modexp_tb is
   signal clk   : std_logic;
   signal reset : std_logic;
 
-  signal modulus           : std_logic_vector(bit_width - 1 downto 0);
-  signal operand_m         : std_logic_vector(bit_width - 1 downto 0);
-  signal operand_x_bar     : std_logic_vector(bit_width - 1 downto 0);
-  signal operand_e         : std_logic_vector(bit_width - 1 downto 0);
-  signal operand_r_sq_modn : std_logic_vector(bit_width - 1 downto 0);
+  signal modulus  : std_logic_vector(bit_width - 1 downto 0);
+  signal base     : std_logic_vector(bit_width - 1 downto 0);
+  signal r_mod_n  : std_logic_vector(bit_width - 1 downto 0);
+  signal exponent : std_logic_vector(bit_width - 1 downto 0);
+  signal r2_mod_n : std_logic_vector(bit_width - 1 downto 0);
 
   signal result : std_logic_vector(bit_width - 1 downto 0);
 
@@ -51,27 +51,28 @@ begin
       bit_width => bit_width
     )
     port map (
-      clk               => clk,
-      reset             => reset,
-      modulus           => modulus,
-      operand_m         => operand_m,
-      operand_x_bar     => operand_x_bar,
-      operand_e         => operand_e,
-      operand_r_sq_modn => operand_r_sq_modn,
-      result            => result,
-      in_valid          => in_valid,
-      in_ready          => in_ready,
-      out_ready         => out_ready,
-      out_valid         => out_valid
+      clk        => clk,
+      reset      => reset,
+      modulus    => modulus,
+      base       => base,
+      r_mod_n    => r_mod_n,
+      exponent   => exponent,
+      r2_mod_n   => r2_mod_n,
+      result     => result,
+      in_valid   => in_valid,
+      in_ready   => in_ready,
+      out_ready  => out_ready,
+      out_valid  => out_valid,
+      in_is_last => '0'
     );
 
   test_sequencer : process is
 
     variable expected_result : std_logic_vector(bit_width - 1 downto 0);
 
-    variable test_m, test_e, test_n : std_logic_vector(bit_width downto 0);
-    variable test_x_bar             : std_logic_vector(bit_width downto 0);
-    variable test_r, test_r_sq_modn : std_logic_vector(bit_width downto 0);
+    variable test_m, test_e, test_n      : std_logic_vector(bit_width downto 0);
+    variable test_r_mod_n, test_r2_mod_n : std_logic_vector(bit_width downto 0);
+    variable test_r                      : std_logic_vector(bit_width downto 0);
 
     variable clk_count_at_start : natural;
 
@@ -120,30 +121,29 @@ begin
       -- Transform inputs to Montgomery form
 
       -- r is 2^(n'length)
-      test_r         := std_logic_vector(shift_left(unsigned(bitscanner(test_n)), 1));
-      test_r_sq_modn := modmul(test_r, test_r, test_n, bit_width + 1);
+      test_r        := std_logic_vector(shift_left(unsigned(bitscanner(test_n)), 1));
+      test_r2_mod_n := modmul(test_r, test_r, test_n, bit_width + 1);
 
-      test_x_bar := modmul(std_logic_vector(to_unsigned(1, bit_width + 1)), test_r, test_n, bit_width + 1);
+      test_r_mod_n := modmul(std_logic_vector(to_unsigned(1, bit_width + 1)), test_r, test_n, bit_width + 1);
 
       expected_result := modexp(test_m, test_e, test_n)(expected_result'range);
 
       log(
           "Base          => " & to_string(test_m, HEX, AS_IS, INCL_RADIX) & "\n" &
           "Exponent      => " & to_string(test_e, HEX, AS_IS, INCL_RADIX) & "\n" &
-          "Modulus       => " & to_string(test_n, HEX, AS_IS, INCL_RADIX) & "\n\n" &
-          
-          "_x            => " & to_string(test_x_bar, HEX, AS_IS, INCL_RADIX) & "\n"
+          "Modulus       => " & to_string(test_n, HEX, AS_IS, INCL_RADIX) & "\n"
         );
 
       clk_count_at_start := clk_counter;
 
       -- Apply tests to DUT
 
-      operand_m         <= test_m(operand_m'range);
-      operand_x_bar     <= test_x_bar(operand_x_bar'range);
-      operand_e         <= test_e(operand_e'range);
-      operand_r_sq_modn <= test_r_sq_modn(operand_r_sq_modn'range);
-      modulus           <= test_n(modulus'range);
+      base     <= test_m(base'range);
+      exponent <= test_e(exponent'range);
+      modulus  <= test_n(modulus'range);
+
+      r_mod_n  <= test_r_mod_n(r_mod_n'range);
+      r2_mod_n <= test_r2_mod_n(r2_mod_n'range);
 
       -- Perform input handshake
 

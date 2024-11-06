@@ -15,6 +15,8 @@ entity rsa_core_output_control is
     out_reg_enable         : out   std_logic;
     out_is_last_reg_enable : out   std_logic;
 
+    current_core_id : out   std_logic_vector(get_bit_width(num_cores) - 1 downto 0);
+
     -- AXI Interface
     msgout_valid : out   std_logic;
     msgout_ready : in    std_logic;
@@ -38,6 +40,8 @@ architecture rtl of rsa_core_output_control is
   signal inc_core_id_counter   : std_logic;
 
 begin
+
+  current_core_id <= core_id_counter_reg_r;
 
   main_process : process (all) is
 

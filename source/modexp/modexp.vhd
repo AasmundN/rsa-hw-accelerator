@@ -14,22 +14,24 @@ entity modexp is
     reset : in    std_logic;
 
     -----------------------------------------------------------------------------
-    -- Modulus (n) of the modulo operation
+    -- Precomputed values used to convert operands to Montgomery form
     -----------------------------------------------------------------------------
-    modulus : in    std_logic_vector(bit_width - 1 downto 0);
+    r_mod_n  : in    std_logic_vector(bit_width - 1 downto 0);
+    r2_mod_n : in    std_logic_vector(bit_width - 1 downto 0);
 
     -----------------------------------------------------------------------------
     -- Operands of modular exponentiation
     -----------------------------------------------------------------------------
-    operand_m         : in    std_logic_vector(bit_width - 1 downto 0);
-    operand_x_bar     : in    std_logic_vector(bit_width - 1 downto 0);
-    operand_e         : in    std_logic_vector(bit_width - 1 downto 0);
-    operand_r_sq_modn : in    std_logic_vector(bit_width - 1 downto 0);
+    base       : in    std_logic_vector(bit_width - 1 downto 0);
+    exponent   : in    std_logic_vector(bit_width - 1 downto 0);
+    modulus    : in    std_logic_vector(bit_width - 1 downto 0);
+    in_is_last : in    std_logic;
 
     -----------------------------------------------------------------------------
     -- Result of calculation
     -----------------------------------------------------------------------------
-    result : out   std_logic_vector(bit_width - 1 downto 0);
+    result      : out   std_logic_vector(bit_width - 1 downto 0);
+    out_is_last : out   std_logic;
 
     -----------------------------------------------------------------------------
     -- Ready/valid handshake signals
@@ -48,6 +50,7 @@ architecture rtl of modexp is
   signal shift_reg_enable       : std_logic;
   signal shift_reg_shift_enable : std_logic;
   signal m_reg_enable           : std_logic;
+  signal is_last_reg_enable     : std_logic;
 
   -- e loop signals
   signal e_current_bit : std_logic;
@@ -72,10 +75,10 @@ begin
       clk                    => clk,
       reset                  => reset,
       modulus                => modulus,
-      operand_m              => operand_m,
-      operand_x_bar          => operand_x_bar,
-      operand_e              => operand_e,
-      operand_r_sq_modn      => operand_r_sq_modn,
+      base                   => base,
+      r_mod_n                => r_mod_n,
+      exponent               => exponent,
+      r2_mod_n               => r2_mod_n,
       result                 => result,
       out_reg_enable         => out_reg_enable,
       shift_reg_enable       => shift_reg_enable,
@@ -87,7 +90,10 @@ begin
       monpro_b_select        => monpro_b_select,
       m_reg_in_select        => m_reg_in_select,
       monpro_enable          => monpro_enable,
-      monpro_output_valid    => monpro_output_valid
+      monpro_output_valid    => monpro_output_valid,
+      in_is_last             => in_is_last,
+      out_is_last            => out_is_last,
+      is_last_reg_enable     => is_last_reg_enable
     );
 
   control : entity work.modexp_control(rtl)
@@ -108,7 +114,8 @@ begin
       monpro_b_select        => monpro_b_select,
       m_reg_in_select        => m_reg_in_select,
       monpro_enable          => monpro_enable,
-      monpro_output_valid    => monpro_output_valid
+      monpro_output_valid    => monpro_output_valid,
+      is_last_reg_enable     => is_last_reg_enable
     );
 
 end architecture rtl;

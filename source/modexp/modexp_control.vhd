@@ -19,6 +19,7 @@ entity modexp_control is
     shift_reg_enable       : out   std_logic;
     shift_reg_shift_enable : out   std_logic;
     m_reg_enable           : out   std_logic;
+    is_last_reg_enable     : out   std_logic;
 
     -- e loop signals
     e_current_bit : in    std_logic;
@@ -64,6 +65,7 @@ begin
     m_reg_in_select        <= '0';
     monpro_b_select        <= "00";
     monpro_enable          <= '0';
+    is_last_reg_enable     <= '0';
     state_next             <= waiting;
 
     case (state) is
@@ -71,14 +73,15 @@ begin
       when waiting =>
 
         in_ready          <= '1';
-        m_reg_enable      <= '1';
-        out_reg_enable    <= '1';
-        shift_reg_enable  <= '1';
         out_reg_in_select <= "10";
         m_reg_in_select   <= '1';
 
         if (in_valid = '1') then
-          state_next <= calc_m_bar;
+          m_reg_enable       <= '1';
+          out_reg_enable     <= '1';
+          shift_reg_enable   <= '1';
+          is_last_reg_enable <= '1';
+          state_next         <= calc_m_bar;
         else
           state_next <= waiting;
         end if;
@@ -186,6 +189,7 @@ begin
         out_reg_in_select      <= "00";
         monpro_b_select        <= "00";
         monpro_enable          <= '0';
+        is_last_reg_enable     <= '0';
         state_next             <= waiting;
 
     end case;

@@ -2,6 +2,9 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
+  -- Utils
+  use work.utils.all;
+
 entity rsa_core is
   generic (
     c_block_size : integer := 8;
@@ -53,6 +56,8 @@ architecture rtl of rsa_core is
   signal modexp_out_valid : std_logic_vector(num_cores - 1 downto 0);
   signal modexp_out_ready : std_logic_vector(num_cores - 1 downto 0);
 
+  signal current_core_id : std_logic_vector(get_bit_width(num_cores) - 1 downto 0);
+
 begin
 
   datapath : entity work.rsa_core_datapath
@@ -78,7 +83,39 @@ begin
       modexp_in_ready        => modexp_in_ready,
       modexp_in_valid        => modexp_in_valid,
       modexp_out_ready       => modexp_out_ready,
-      modexp_out_valid       => modexp_out_valid
+      modexp_out_valid       => modexp_out_valid,
+      current_core_id        => current_core_id
+    );
+
+  input_control : entity work.rsa_core_input_control
+    generic map (
+      num_cores => num_cores
+    )
+    port map (
+      clk                   => clk,
+      reset                 => reset_n,
+      in_reg_enable         => in_reg_enable,
+      in_is_last_reg_enable => in_is_last_reg_enable,
+      msgin_valid           => msgin_valid,
+      msgin_ready           => msgin_ready,
+      modexp_in_ready       => modexp_in_ready,
+      modexp_in_valid       => modexp_in_valid
+    );
+
+  output_control : entity work.rsa_core_output_control
+    generic map (
+      num_cores => num_cores
+    )
+    port map (
+      clk                    => clk,
+      reset                  => reset_n,
+      out_reg_enable         => out_reg_enable,
+      out_is_last_reg_enable => out_is_last_reg_enable,
+      msgout_valid           => msgout_valid,
+      msgout_ready           => msgout_ready,
+      modexp_out_ready       => modexp_out_ready,
+      modexp_out_valid       => modexp_out_valid,
+      current_core_id        => current_core_id
     );
 
 end architecture rtl;
