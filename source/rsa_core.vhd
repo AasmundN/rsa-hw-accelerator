@@ -60,6 +60,8 @@ architecture rtl of rsa_core is
 
 begin
 
+  rsa_status <= (others => '0');
+
   datapath : entity work.rsa_core_datapath
     generic map (
       bit_width => c_block_size,
