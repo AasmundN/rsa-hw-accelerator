@@ -166,8 +166,10 @@ end architecture rtl;
 
 configuration conf of rsa_core_datapath is
   for rtl
-    for all : modexp
-      use entity work.modexp(rtl);
+    for modexp_cores
+      for all : modexp
+        use entity work.modexp(rtl);
+      end for;
     end for;
   end for;
 end configuration conf;
