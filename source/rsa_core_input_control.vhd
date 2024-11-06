@@ -34,7 +34,7 @@ architecture rtl of rsa_core_input_control is
 
   signal state, next_state : state_type;
 
-  signal core_id_counter_reg : std_logic_vector(log2ceil(num_cores) - 1 downto 0);
+  signal core_id_counter_reg : std_logic_vector(get_bit_width(num_cores) - 1 downto 0);
   signal inc_core_id_counter : std_logic;
 
 begin
@@ -72,7 +72,7 @@ begin
 
           if (modexp_in_ready(core_index) = '1') then
             inc_core_id_counter <= '1';
-            next_state <= receive_message;
+            next_state          <= receive_message;
           else
             next_state <= assign_message;
           end if;

@@ -48,7 +48,9 @@ package utils is
     n : std_logic_vector
   ) return std_logic_vector;
 
-  function log2ceil (
+  -- Calculates the minimum required bits to represent a number "n"
+
+  function get_bit_width (
     n : integer
   ) return integer;
 
@@ -202,7 +204,7 @@ package body utils is
 
   -- Calculates the ceiling of the base-2 logarithm for a given "n"
 
-  function log2ceil (
+  function get_bit_width (
     n : integer
   ) return integer is
 
@@ -220,6 +222,6 @@ package body utils is
 
     return result;
 
-  end function log2ceil;
+  end function get_bit_width;
 
 end package body utils;
