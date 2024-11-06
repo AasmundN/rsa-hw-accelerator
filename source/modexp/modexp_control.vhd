@@ -25,8 +25,9 @@ entity modexp_control is
     e_bit_is_last : in    std_logic;
 
     -- MUX control
-    out_reg_in_select : out   std_logic;
+    out_reg_in_select : out   std_logic_vector(1 downto 0);
     monpro_b_select   : out   std_logic_vector(1 downto 0);
+    m_reg_in_select   : out   std_logic;
 
     -- Monpro control
     monpro_enable       : out   std_logic;
@@ -37,7 +38,9 @@ end entity modexp_control;
 architecture rtl of modexp_control is
 
   type state_type is (
-    waiting,                     -- Input handshake
+    waiting,                     -- Input handshake, set m and r_sq_modn in respective registers
+    calc_m_bar,                  -- calculate m_bar and place in out_reg
+    save_m_bar,                  -- latch m_bar into m_reg
     start,                       -- Removes leading zeros from e shiftreg
     monpro_xx, monpro_mx, shift, -- Repeated squaring
     monpro_x1,                   -- Prepare output
@@ -57,7 +60,8 @@ begin
     shift_reg_enable       <= '0';
     shift_reg_shift_enable <= '0';
     m_reg_enable           <= '0';
-    out_reg_in_select      <= '0';
+    out_reg_in_select      <= "00";
+    m_reg_in_select        <= '0';
     monpro_b_select        <= "00";
     monpro_enable          <= '0';
     state_next             <= waiting;
@@ -70,13 +74,35 @@ begin
         m_reg_enable      <= '1';
         out_reg_enable    <= '1';
         shift_reg_enable  <= '1';
-        out_reg_in_select <= '1';
+        out_reg_in_select <= "10";
+        m_reg_in_select   <= '1';
 
         if (in_valid = '1') then
-          state_next <= start;
+          state_next <= calc_m_bar;
         else
           state_next <= waiting;
         end if;
+
+      when calc_m_bar =>
+
+        monpro_b_select <= "10";
+        monpro_enable   <= '1';
+
+        if (monpro_output_valid = '1') then
+          monpro_enable  <= '0';
+          out_reg_enable <= '1';
+          state_next     <= save_m_bar;
+        else
+          state_next <= calc_m_bar;
+        end if;
+
+      when save_m_bar =>
+
+        m_reg_enable      <= '1';
+        out_reg_in_select <= "01";
+        out_reg_enable    <= '1';
+
+        state_next <= start;
 
       when start =>
 
@@ -157,7 +183,7 @@ begin
         shift_reg_enable       <= '0';
         shift_reg_shift_enable <= '0';
         m_reg_enable           <= '0';
-        out_reg_in_select      <= '0';
+        out_reg_in_select      <= "00";
         monpro_b_select        <= "00";
         monpro_enable          <= '0';
         state_next             <= waiting;

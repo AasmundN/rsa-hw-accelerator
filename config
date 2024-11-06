@@ -1,4 +1,5 @@
-DIR   := build
-MODE  := work
-GUI   := yes
-V     := 0
+DIR := build
+MODE := work
+GUI := yes
+V := 0
+SKIP := rsa_core_datapath rsa_core
