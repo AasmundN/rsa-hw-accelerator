@@ -37,8 +37,8 @@ $(error "$(GUI): invalid GUI value")
 endif
 endif
 
-GHDLAFLAGS ?= --std=08 -frelaxed --workdir=$(TOP)/$(DIR) -Wno-hide -Wno-shared
-GHDLRFLAGS ?= --std=08 -frelaxed --workdir=$(TOP)/$(DIR) -Wno-hide -Wno-shared
+GHDLAFLAGS ?= --std=08 -frelaxed --workdir=$(TOP)/$(DIR) -Wno-hide -Wno-shared -Wno-pure
+GHDLRFLAGS ?= --std=08 -frelaxed --workdir=$(TOP)/$(DIR) -Wno-hide -Wno-shared -Wno-pure
 GHDLRUNOPTS ?= 
 
 ifeq ($(SIM),ghdl)
