@@ -64,7 +64,7 @@ begin
 
   rsa_status <= (others => '0');
 
-  -- Out system uses active high reset
+  -- Our system uses active high reset
   reset <= not reset_n;
 
   datapath : entity work.rsa_core_datapath
