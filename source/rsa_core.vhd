@@ -46,6 +46,8 @@ end entity rsa_core;
 
 architecture rtl of rsa_core is
 
+  signal reset : std_logic;
+
   signal in_reg_enable          : std_logic;
   signal out_reg_enable         : std_logic;
   signal in_is_last_reg_enable  : std_logic;
@@ -62,6 +64,9 @@ begin
 
   rsa_status <= (others => '0');
 
+  -- Out system uses active high reset
+  reset <= not reset_n;
+
   datapath : entity work.rsa_core_datapath
     generic map (
       bit_width => c_block_size,
@@ -69,7 +74,7 @@ begin
     )
     port map (
       clk                    => clk,
-      reset                  => reset_n,
+      reset                  => reset,
       key_n                  => key_n,
       key_e_d                => key_e_d,
       r_mod_n                => r_mod_n,
@@ -95,7 +100,7 @@ begin
     )
     port map (
       clk                   => clk,
-      reset                 => reset_n,
+      reset                 => reset,
       in_reg_enable         => in_reg_enable,
       in_is_last_reg_enable => in_is_last_reg_enable,
       msgin_valid           => msgin_valid,
@@ -110,7 +115,7 @@ begin
     )
     port map (
       clk                    => clk,
-      reset                  => reset_n,
+      reset                  => reset,
       out_reg_enable         => out_reg_enable,
       out_is_last_reg_enable => out_is_last_reg_enable,
       msgout_valid           => msgout_valid,
