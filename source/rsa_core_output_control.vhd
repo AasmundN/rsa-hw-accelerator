@@ -112,7 +112,7 @@ begin
       elsif (inc_core_id_counter = '1') then
         core_id_counter_reg_r <= std_logic_vector(unsigned(core_id_counter_reg_r) + 1);
 
-        if (unsigned(core_id_counter_reg_r) >= num_cores) then
+        if (unsigned(core_id_counter_reg_r) >= num_cores - 1) then
           core_id_counter_reg_r <= (others => '0');
         end if;
       end if;
