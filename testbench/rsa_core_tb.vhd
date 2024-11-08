@@ -12,7 +12,7 @@ entity rsa_core_tb is
   generic (
     bit_width     : integer := 32;
     num_cores     : integer := 8;
-    test_set_size : integer := 64;
+    test_set_size : integer := 72;
     clock_period  : time    := 1 ns
   );
 end entity rsa_core_tb;
@@ -23,8 +23,8 @@ architecture func of rsa_core_tb is
   -- DUT signal interface
   -----------------------------------------------------------------------------
 
-  signal clk   : std_logic;
-  signal reset : std_logic;
+  signal clk     : std_logic;
+  signal reset_n : std_logic;
 
   -- In/out handshake
   signal in_valid,  in_ready  : std_logic;
@@ -136,7 +136,7 @@ begin
     )
     port map (
       clk          => clk,
-      reset_n      => reset,
+      reset_n      => reset_n,
       key_n        => modulus,
       key_e_d      => exponent,
       r_mod_n      => r_mod_n,
@@ -185,12 +185,12 @@ begin
 
     -- Apply reset
 
-    reset <= '1';
+    reset_n <= '0';
 
     wait until falling_edge(clk);
     wait until rising_edge(clk);
 
-    reset <= '0';
+    reset_n <= '1';
 
     -- Start main test sequence
 
