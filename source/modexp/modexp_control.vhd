@@ -126,8 +126,6 @@ begin
           if (e_current_bit = '1') then
             state_next <= monpro_mx;
           else
-            -- state_next <= shift;
-
             shift_reg_shift_enable <= '1';
 
             if (e_bit_is_last = '1') then
@@ -146,19 +144,16 @@ begin
         monpro_b_select <= "10";
 
         if (monpro_output_valid = '1') then
-          out_reg_enable <= '1';
-          monpro_enable  <= '0';
-          ----
-          ---- state_next     <= shift;
-          ----
-          shift_reg_shift_enable <='1';
+          out_reg_enable         <= '1';
+          monpro_enable          <= '0';
+          shift_reg_shift_enable <= '1';
 
           if (e_bit_is_last = '1') then
             state_next <= monpro_x1;
           else
             state_next <= monpro_xx;
           end if;
-          ----
+        ----
         else
           state_next <= monpro_mx;
         end if;

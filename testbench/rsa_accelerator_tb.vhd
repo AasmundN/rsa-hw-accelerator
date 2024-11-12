@@ -187,27 +187,27 @@ architecture struct of rsa_accelerator_tb is
 
         when 'A'|'a' =>
 
-          temp1 := x"a";
+          temp1 := x"A";
 
         when 'B'|'b' =>
 
-          temp1 := x"b";
+          temp1 := x"B";
 
         when 'C'|'c' =>
 
-          temp1 := x"c";
+          temp1 := x"C";
 
         when 'D'|'d' =>
 
-          temp1 := x"d";
+          temp1 := x"D";
 
         when 'E'|'e' =>
 
-          temp1 := x"e";
+          temp1 := x"E";
 
         when 'F'|'f' =>
 
-          temp1 := x"f";
+          temp1 := x"F";
 
         when others =>
 
