@@ -20,6 +20,7 @@ entity alu is
     -----------------------------------------------------------------------------
     operand_a : in    std_logic_vector(bit_width - 1 downto 0);
     operand_b : in    std_logic_vector(bit_width - 1 downto 0);
+    operand_c : in    std_logic_vector(bit_width - 1 downto 0);
 
     -----------------------------------------------------------------------------
     -- Outputs '1' if operand_a is less than operand_b
@@ -49,11 +50,11 @@ begin
 
       when sub =>
 
-        result <= std_logic_vector(unsigned(operand_a) - unsigned(operand_b));
+        result <= std_logic_vector(unsigned(operand_a) - unsigned(operand_b) - to_unsigned(0, bit_width));
 
       when add =>
 
-        result <= std_logic_vector(unsigned(operand_a) + unsigned(operand_b));
+        result <= std_logic_vector(unsigned(operand_a) + unsigned(operand_b) + unsigned(operand_c));
 
       when others =>
 

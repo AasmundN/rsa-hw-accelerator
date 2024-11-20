@@ -10,7 +10,7 @@ library uvvm_util;
 
 entity alu_tb is
   generic (
-    bit_width     : integer := 32;
+    bit_width     : integer := 256;
     test_set_size : integer := 256
   );
 end entity alu_tb;
@@ -20,6 +20,7 @@ architecture func of alu_tb is
   -- ALU inputs and output
   signal operand_a : std_logic_vector(bit_width - 1 downto 0);
   signal operand_b : std_logic_vector(bit_width - 1 downto 0);
+  signal operand_c : std_logic_vector(bit_width - 1 downto 0);
   signal result    : std_logic_vector(bit_width - 1 downto 0);
 
   -- ALU control and flags
@@ -52,7 +53,7 @@ architecture func of alu_tb is
 
 begin
 
-  dut : entity work.alu
+  dut : entity work.alu(rtl)
     generic map (
       bit_width => bit_width
     )
@@ -60,6 +61,7 @@ begin
       opcode    => opcode,
       operand_a => operand_a,
       operand_b => operand_b,
+      operand_c => operand_c,
       less_than => less_than,
       result    => result
     );
@@ -70,6 +72,7 @@ begin
     variable test_opcode : alu_opcode_t;
     variable test_a      : std_logic_vector(bit_width - 1 downto 0);
     variable test_b      : std_logic_vector(bit_width - 1 downto 0);
+    variable test_c      : std_logic_vector(bit_width - 1 downto 0);
 
     -- Expected outputs
     variable expected_result    : std_logic_vector(bit_width - 1 downto 0);
@@ -95,8 +98,12 @@ begin
 
       -- Generate random inputs
       test_opcode := alu_opcode_t'val(random(0, 2));
-      test_a      := random(operand_a'length);
-      test_b      := random(operand_b'length);
+      -- test_a      := random(operand_a'length);
+      -- test_b      := random(operand_b'length);
+      -- test_c      := random(operand_b'length);
+      test_a := std_logic_vector(to_unsigned(165, bit_width));
+      test_b := std_logic_vector(to_unsigned(177, bit_width));
+      test_c := std_logic_vector(to_unsigned(162, bit_width));
 
       -- Calculate expected outputs
       case test_opcode is
@@ -107,7 +114,7 @@ begin
 
         when add =>
 
-          expected_result := std_logic_vector(unsigned(test_a) + unsigned(test_b));
+          expected_result := std_logic_vector(unsigned(test_a) + unsigned(test_b) + unsigned(test_c));
 
         when sub =>
 
@@ -124,12 +131,14 @@ begin
       log(
           "Opcode        => " & opcode_to_string(test_opcode) & "\n" &
           "Operand a     => " & to_string(test_a, HEX, AS_IS, INCL_RADIX) & "\n" &
-          "Operand b     => " & to_string(test_b, HEX, AS_IS, INCL_RADIX) & "\n"
+          "Operand b     => " & to_string(test_b, HEX, AS_IS, INCL_RADIX) & "\n" &
+          "Operand c     => " & to_string(test_c, HEX, AS_IS, INCL_RADIX) & "\n"
         );
 
       -- Apply test values
       operand_a <= test_a;
       operand_b <= test_b;
+      operand_c <= test_c;
       opcode    <= test_opcode;
 
       wait for 1 ns;
