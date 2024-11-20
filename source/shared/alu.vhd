@@ -39,7 +39,7 @@ architecture rtl of alu is
 begin
 
   -- Perform main ALU operation
-  process (opcode, operand_a, operand_b) is
+  process (opcode, operand_a, operand_b, operand_c) is
   begin
 
     case (opcode) is
