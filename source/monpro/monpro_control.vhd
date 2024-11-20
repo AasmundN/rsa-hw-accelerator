@@ -27,7 +27,6 @@ entity monpro_control is
 
     -- Data control
     alu_opcode   : out   alu_opcode_t;
-    alu_a_select : out   std_logic;
     alu_b_select : out   std_logic;
 
     n_bit_is_last : in    std_logic
@@ -37,9 +36,10 @@ end entity monpro_control;
 architecture rtl of monpro_control is
 
   type state_type is (
-    idle,                        -- Wait and initialise states
-    add_b, add_n, shift, reduce, -- Compute states
-    valid                        -- Valid state
+    idle, -- Wait and initialise states
+    add_reduce,
+    reduce,
+    valid -- Valid state
   );
 
   signal state, state_next : state_type;
@@ -57,7 +57,6 @@ begin
 
     output_valid <= '0';
     alu_opcode   <= pass;
-    alu_a_select <= '1';
     alu_b_select <= '0';
 
     state_next <= idle;
@@ -71,37 +70,22 @@ begin
 
         if (enable = '1') then
           reset      <= '1';
-          state_next <= add_b;
+          state_next <= add_reduce;
         else
           state_next <= idle;
         end if;
 
-      when add_b =>
-
-        alu_opcode     <= add;
-        out_reg_enable <= '1';
-        alu_b_select   <= '1';
-
-        if (is_odd = '1') then
-          state_next <= add_n;
-        else
-          shift_reg_shift_enable <= '1';
-          if (n_bit_is_last = '0') then
-            state_next <= add_b;
-          else
-            state_next <= reduce;
-          end if;
-        end if;
-
-      when add_n =>
+      when add_reduce =>
 
         alu_opcode             <= add;
         out_reg_enable         <= '1';
-        alu_a_select           <= '0';
         shift_reg_shift_enable <= '1';
 
         if (n_bit_is_last = '0') then
-          state_next <= add_b;
+          if (is_odd = '0') then
+            alu_b_select <= '1';
+          end if;
+          state_next <= add_reduce;
         else
           state_next <= reduce;
         end if;
@@ -133,7 +117,6 @@ begin
 
         output_valid <= '0';
         alu_opcode   <= pass;
-        alu_a_select <= '1';
         alu_b_select <= '0';
 
         state_next <= idle;

@@ -20,7 +20,6 @@ entity monpro_datapath is
     -- ALU interface
     -----------------------------------------------------------------------------
     alu_opcode    : in    alu_opcode_t;
-    alu_a_select  : in    std_logic;
     alu_b_select  : in    std_logic;
     alu_less_than : out   std_logic;
 
@@ -70,20 +69,23 @@ architecture rtl of monpro_datapath is
   signal out_reg_right_shifted : std_logic_vector(bit_width + 1 downto 0);
 
   -- ALU inputs and outputs
-  signal alu_a      : std_logic_vector(bit_width + 1 downto 0);
   signal alu_b      : std_logic_vector(bit_width + 1 downto 0);
   signal alu_result : std_logic_vector(bit_width + 1 downto 0);
 
   signal alu_b_mux_a0_intermediary : std_logic_vector(bit_width + 1 downto 0);
   signal alu_b_mux_a1_intermediary : std_logic_vector(bit_width + 1 downto 0);
 
+  signal alu_c_intermediary : std_logic_vector(bit_width + 1 downto 0);
+
 begin
 
   alu_b_mux_a0_intermediary <= "00" & modulus_reg_r;
-  alu_b_mux_a1_intermediary <= "00" & and_b_a;
+  alu_b_mux_a1_intermediary <= (others => '0');
+
+  alu_c_intermediary <= "00" & and_b_a;
 
   result        <= out_reg_r(bit_width - 1 downto 0);
-  is_odd        <= alu_a(0) xor (operand_b(0) and a_shift_reg_r(0));
+  is_odd        <= out_reg_right_shifted(0) xor (b_reg_r(0) and a_shift_reg_r(0));
   n_bit_is_last <= n_shift_reg_r(0);
 
   alu : entity work.alu(rtl)
@@ -91,22 +93,12 @@ begin
       bit_width => bit_width + 2
     )
     port map (
-      operand_a => alu_a,
+      operand_a => out_reg_right_shifted,
       operand_b => alu_b,
+      operand_c => alu_c_intermediary,
       result    => alu_result,
       opcode    => alu_opcode,
       less_than => alu_less_than
-    );
-
-  alu_a_mux : entity work.mux_2to1(rtl)
-    generic map (
-      bit_width => bit_width + 2
-    )
-    port map (
-      a0  => out_reg_r,
-      a1  => out_reg_right_shifted,
-      b   => alu_a,
-      sel => alu_a_select
     );
 
   -- shiftreg_r(0) and operand_b are different sizes, might be sussy

@@ -46,7 +46,6 @@ architecture rtl of monpro is
 
   -- ALU control signals
   signal alu_opcode    : alu_opcode_t;
-  signal alu_a_select  : std_logic;
   signal alu_b_select  : std_logic;
   signal alu_less_than : std_logic;
 
@@ -70,7 +69,6 @@ begin
       clk                    => clk,
       reset                  => reset,
       alu_opcode             => alu_opcode,
-      alu_a_select           => alu_a_select,
       alu_b_select           => alu_b_select,
       alu_less_than          => alu_less_than,
       out_reg_enable         => out_reg_enable,
@@ -99,7 +97,6 @@ begin
       n_b_reg_enable         => n_b_reg_enable,
       output_valid           => output_valid,
       alu_opcode             => alu_opcode,
-      alu_a_select           => alu_a_select,
       alu_b_select           => alu_b_select
     );
 
