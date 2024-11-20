@@ -11,8 +11,8 @@ library uvvm_util;
 
 entity monpro_tb is
   generic (
-    bit_width     : integer := 8;
-    test_set_size : integer := 10;
+    bit_width     : integer := 256;
+    test_set_size : integer := 50;
     clock_period  : time    := 1 ns
   );
 end entity monpro_tb;

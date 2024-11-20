@@ -10,7 +10,7 @@ library uvvm_util;
 
 entity modexp_tb is
   generic (
-    bit_width     : integer := 32;
+    bit_width     : integer := 256;
     test_set_size : integer := 5;
     clock_period  : time    := 1 ns
   );

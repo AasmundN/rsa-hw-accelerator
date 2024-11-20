@@ -81,10 +81,11 @@ begin
         out_reg_enable         <= '1';
         shift_reg_shift_enable <= '1';
 
+        if (is_odd = '0') then
+          alu_b_select <= '1';
+        end if;
+
         if (n_bit_is_last = '0') then
-          if (is_odd = '0') then
-            alu_b_select <= '1';
-          end if;
           state_next <= add_reduce;
         else
           state_next <= reduce;
