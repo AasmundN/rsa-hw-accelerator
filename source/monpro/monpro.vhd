@@ -54,6 +54,7 @@ architecture rtl of monpro is
   signal out_reg_enable         : std_logic;
   signal shift_reg_enable       : std_logic;
   signal shift_reg_shift_enable : std_logic;
+  signal n_b_reg_enable         : std_logic;
 
   -- Used during execution of algorithm
   signal is_odd        : std_logic;
@@ -75,6 +76,7 @@ begin
       out_reg_enable         => out_reg_enable,
       shift_reg_enable       => shift_reg_enable,
       shift_reg_shift_enable => shift_reg_shift_enable,
+      n_b_reg_enable         => n_b_reg_enable,
       modulus                => modulus,
       operand_a              => operand_a,
       operand_b              => operand_b,
@@ -94,6 +96,7 @@ begin
       out_reg_enable         => out_reg_enable,
       shift_reg_enable       => shift_reg_enable,
       shift_reg_shift_enable => shift_reg_shift_enable,
+      n_b_reg_enable         => n_b_reg_enable,
       output_valid           => output_valid,
       alu_opcode             => alu_opcode,
       alu_a_select           => alu_a_select,

@@ -23,6 +23,7 @@ entity monpro_control is
     out_reg_enable         : out   std_logic;
     shift_reg_enable       : out   std_logic;
     shift_reg_shift_enable : out   std_logic;
+    n_b_reg_enable         : out   std_logic;
 
     -- Data control
     alu_opcode   : out   alu_opcode_t;
@@ -51,6 +52,7 @@ begin
     out_reg_enable         <= '0';
     shift_reg_enable       <= '0';
     shift_reg_shift_enable <= '0';
+    n_b_reg_enable         <= '0';
     reset                  <= '0';
 
     output_valid <= '0';
@@ -65,6 +67,7 @@ begin
       when idle =>
 
         shift_reg_enable <= '1';
+        n_b_reg_enable   <= '1';
 
         if (enable = '1') then
           reset      <= '1';
@@ -125,6 +128,7 @@ begin
         out_reg_enable         <= '0';
         shift_reg_enable       <= '0';
         shift_reg_shift_enable <= '0';
+        n_b_reg_enable         <= '0';
         reset                  <= '0';
 
         output_valid <= '0';

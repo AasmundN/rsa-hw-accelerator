@@ -27,6 +27,7 @@ entity monpro_datapath is
     -----------------------------------------------------------------------------
     -- Internal register control signals
     -----------------------------------------------------------------------------
+    n_b_reg_enable         : in    std_logic;
     out_reg_enable         : in    std_logic;
     shift_reg_enable       : in    std_logic;
     shift_reg_shift_enable : in    std_logic;
@@ -55,6 +56,8 @@ architecture rtl of monpro_datapath is
 
   -- Internal registers
 
+  signal modulus_reg_r, b_reg_r : std_logic_vector(bit_width - 1 downto 0);
+
   -- The intermediary result of the calculation loop
   -- requires a size of bit_width + 2 (see monpro algorithm)
   signal out_reg_r     : std_logic_vector(bit_width + 1 downto 0);
@@ -76,7 +79,7 @@ architecture rtl of monpro_datapath is
 
 begin
 
-  alu_b_mux_a0_intermediary <= "00" & modulus;
+  alu_b_mux_a0_intermediary <= "00" & modulus_reg_r;
   alu_b_mux_a1_intermediary <= "00" & and_b_a;
 
   result        <= out_reg_r(bit_width - 1 downto 0);
@@ -112,7 +115,7 @@ begin
       bit_width => bit_width
     )
     port map (
-      signal_in       => operand_b,
+      signal_in       => b_reg_r,
       set_mask_values => a_shift_reg_r(0),
 
       signal_out => and_b_a
@@ -158,6 +161,19 @@ begin
     end if;
 
   end process out_reg;
+
+  -- Latch modulus and operand_b inputs
+  n_b_reg : process (clk, n_b_reg_enable) is
+  begin
+
+    if rising_edge(clk) then
+      if (n_b_reg_enable = '1') then
+        modulus_reg_r <= modulus;
+        b_reg_r       <= operand_b;
+      end if;
+    end if;
+
+  end process n_b_reg;
 
   shift_reg : process (clk, reset, shift_reg_enable, shift_reg_shift_enable, alu_result) is
   begin
