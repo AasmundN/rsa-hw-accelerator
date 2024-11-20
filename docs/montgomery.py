@@ -8,7 +8,7 @@ def bitfield(n):
 
 # calculate Montgomery product using add-shift
 # method from RSA Hardware Implementation doc
-def mon_pro(A, B, n):
+def monpro(A, B, n):
     u = 0
 
     A_bits = bitfield(A)
@@ -32,22 +32,22 @@ def mon_pro(A, B, n):
 
 
 # Montgomery exponentiation
-def mod_exp(M, e, n):
+def modexp(M, e, n):
     e_bits = bitfield(e)
 
     k = n.bit_length()
     r = 1 << k  # r = 2^k
     r2 = r ** 2 % n
 
-    _M = mon_pro(M, r2, n)
-    _x = mon_pro(1, r2, n)
+    _M = monpro(M, r2, n)
+    _x = monpro(1, r2, n)
 
     for e_bit in e_bits:
-        _x = mon_pro(_x, _x, n)
+        _x = monpro(_x, _x, n)
         if e_bit == 1:
-            _x = mon_pro(_M, _x, n)
+            _x = monpro(_M, _x, n)
 
-    return mon_pro(_x, 1, n)
+    return monpro(_x, 1, n)
 
 
 def main():
@@ -60,8 +60,8 @@ def main():
     d = privkey.d
     n = privkey.n
 
-    encrypted = mod_exp(m, e, n)
-    decrypted = mod_exp(encrypted, d, n)
+    encrypted = modexp(m, e, n)
+    decrypted = modexp(encrypted, d, n)
 
     print("Message: ", m)
     print("Encrypted: ", encrypted)
