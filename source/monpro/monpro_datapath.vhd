@@ -101,7 +101,6 @@ begin
       less_than => alu_less_than
     );
 
-  -- shiftreg_r(0) and operand_b are different sizes, might be sussy
   bitwise_masker_b_a : entity work.bitwise_masker(rtl)
     generic map (
       bit_width => bit_width
