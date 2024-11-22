@@ -10,8 +10,8 @@ library uvvm_util;
 
 entity modexp_tb is
   generic (
-    bit_width     : integer := 256;
-    test_set_size : integer := 5;
+    bit_width     : integer := 64;
+    test_set_size : integer := 10;
     clock_period  : time    := 1 ns
   );
 end entity modexp_tb;
@@ -30,11 +30,12 @@ architecture func of modexp_tb is
   signal clk   : std_logic;
   signal reset : std_logic;
 
-  signal modulus  : std_logic_vector(bit_width - 1 downto 0);
-  signal base     : std_logic_vector(bit_width - 1 downto 0);
-  signal r_mod_n  : std_logic_vector(bit_width - 1 downto 0);
-  signal exponent : std_logic_vector(bit_width - 1 downto 0);
-  signal r2_mod_n : std_logic_vector(bit_width - 1 downto 0);
+  signal modulus        : std_logic_vector(bit_width - 1 downto 0);
+  signal modulus_length : std_logic_vector(bit_width - 1 downto 0);
+  signal base           : std_logic_vector(bit_width - 1 downto 0);
+  signal r_mod_n        : std_logic_vector(bit_width - 1 downto 0);
+  signal exponent       : std_logic_vector(bit_width - 1 downto 0);
+  signal r2_mod_n       : std_logic_vector(bit_width - 1 downto 0);
 
   signal result : std_logic_vector(bit_width - 1 downto 0);
 
@@ -51,19 +52,20 @@ begin
       bit_width => bit_width
     )
     port map (
-      clk        => clk,
-      reset      => reset,
-      modulus    => modulus,
-      base       => base,
-      r_mod_n    => r_mod_n,
-      exponent   => exponent,
-      r2_mod_n   => r2_mod_n,
-      result     => result,
-      in_valid   => in_valid,
-      in_ready   => in_ready,
-      out_ready  => out_ready,
-      out_valid  => out_valid,
-      in_is_last => '0'
+      clk            => clk,
+      reset          => reset,
+      modulus        => modulus,
+      modulus_length => modulus_length,
+      base           => base,
+      r_mod_n        => r_mod_n,
+      exponent       => exponent,
+      r2_mod_n       => r2_mod_n,
+      result         => result,
+      in_valid       => in_valid,
+      in_ready       => in_ready,
+      out_ready      => out_ready,
+      out_valid      => out_valid,
+      in_is_last     => '0'
     );
 
   test_sequencer : process is
@@ -138,9 +140,10 @@ begin
 
       -- Apply tests to DUT
 
-      base     <= test_m(base'range);
-      exponent <= test_e(exponent'range);
-      modulus  <= test_n(modulus'range);
+      base           <= test_m(base'range);
+      exponent       <= test_e(exponent'range);
+      modulus        <= test_n(modulus'range);
+      modulus_length <= bitscanner(test_n(modulus_length'range));
 
       r_mod_n  <= test_r_mod_n(r_mod_n'range);
       r2_mod_n <= test_r2_mod_n(r2_mod_n'range);

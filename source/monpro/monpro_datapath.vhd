@@ -34,10 +34,11 @@ entity monpro_datapath is
     -----------------------------------------------------------------------------
     -- Main inputs and outputs
     -----------------------------------------------------------------------------
-    modulus   : in    std_logic_vector(bit_width - 1 downto 0);
-    operand_a : in    std_logic_vector(bit_width - 1 downto 0);
-    operand_b : in    std_logic_vector(bit_width - 1 downto 0);
-    result    : out   std_logic_vector(bit_width - 1 downto 0);
+    modulus        : in    std_logic_vector(bit_width - 1 downto 0);
+    modulus_length : in    std_logic_vector(bit_width - 1 downto 0);
+    operand_a      : in    std_logic_vector(bit_width - 1 downto 0);
+    operand_b      : in    std_logic_vector(bit_width - 1 downto 0);
+    result         : out   std_logic_vector(bit_width - 1 downto 0);
 
     -----------------------------------------------------------------------------
     -- u(0) xor (a(i) and b(0))
@@ -62,8 +63,7 @@ architecture rtl of monpro_datapath is
   signal out_reg_r     : std_logic_vector(bit_width + 1 downto 0);
   signal a_shift_reg_r : std_logic_vector(bit_width - 1 downto 0);
 
-  signal n_shift_reg_r  : std_logic_vector(bit_width - 1 downto 0);
-  signal n_shift_reg_in : std_logic_vector(bit_width - 1 downto 0);
+  signal n_shift_reg_r : std_logic_vector(bit_width - 1 downto 0);
 
   -- Output from bit shifter
   signal out_reg_right_shifted : std_logic_vector(bit_width + 1 downto 0);
@@ -123,15 +123,6 @@ begin
       sel => alu_b_select
     );
 
-  msb_bitscanner : entity work.msb_bitscanner
-    generic map (
-      bit_width => bit_width
-    )
-    port map (
-      signal_in  => modulus,
-      signal_out => n_shift_reg_in
-    );
-
   -- Right shift one bit
   bit_shifter : process (out_reg_r) is
   begin
@@ -172,7 +163,7 @@ begin
     if rising_edge(clk) then
       if (shift_reg_enable = '1') then
         a_shift_reg_r <= operand_a;
-        n_shift_reg_r <= n_shift_reg_in;
+        n_shift_reg_r <= modulus_length;
       -- Shift register content
       elsif (shift_reg_shift_enable = '1') then
         -- Nono?
