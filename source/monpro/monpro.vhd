@@ -18,7 +18,8 @@ entity monpro is
     -----------------------------------------------------------------------------
     -- Modulus (n) of the modulo operation
     -----------------------------------------------------------------------------
-    modulus : in    std_logic_vector(bit_width - 1 downto 0);
+    modulus        : in    std_logic_vector(bit_width - 1 downto 0);
+    modulus_length : in    std_logic_vector(bit_width - 1 downto 0);
 
     -----------------------------------------------------------------------------
     -- Operands of Montgomery product
@@ -76,6 +77,7 @@ begin
       shift_reg_shift_enable => shift_reg_shift_enable,
       n_b_reg_enable         => n_b_reg_enable,
       modulus                => modulus,
+      modulus_length         => modulus_length,
       operand_a              => operand_a,
       operand_b              => operand_b,
       result                 => result,

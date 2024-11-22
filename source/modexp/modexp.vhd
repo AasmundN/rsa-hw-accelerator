@@ -22,10 +22,11 @@ entity modexp is
     -----------------------------------------------------------------------------
     -- Operands of modular exponentiation
     -----------------------------------------------------------------------------
-    base       : in    std_logic_vector(bit_width - 1 downto 0);
-    exponent   : in    std_logic_vector(bit_width - 1 downto 0);
-    modulus    : in    std_logic_vector(bit_width - 1 downto 0);
-    in_is_last : in    std_logic;
+    base           : in    std_logic_vector(bit_width - 1 downto 0);
+    exponent       : in    std_logic_vector(bit_width - 1 downto 0);
+    modulus        : in    std_logic_vector(bit_width - 1 downto 0);
+    modulus_length : in    std_logic_vector(bit_width - 1 downto 0);
+    in_is_last     : in    std_logic;
 
     -----------------------------------------------------------------------------
     -- Result of calculation
@@ -75,6 +76,7 @@ begin
       clk                    => clk,
       reset                  => reset,
       modulus                => modulus,
+      modulus_length         => modulus_length,
       base                   => base,
       r_mod_n                => r_mod_n,
       exponent               => exponent,

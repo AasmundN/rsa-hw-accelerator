@@ -22,10 +22,11 @@ entity modexp_datapath is
     -----------------------------------------------------------------------------
     -- Operands of modular exponentiation
     -----------------------------------------------------------------------------
-    base       : in    std_logic_vector(bit_width - 1 downto 0);
-    exponent   : in    std_logic_vector(bit_width - 1 downto 0);
-    modulus    : in    std_logic_vector(bit_width - 1 downto 0);
-    in_is_last : in    std_logic;
+    base           : in    std_logic_vector(bit_width - 1 downto 0);
+    exponent       : in    std_logic_vector(bit_width - 1 downto 0);
+    modulus        : in    std_logic_vector(bit_width - 1 downto 0);
+    modulus_length : in    std_logic_vector(bit_width - 1 downto 0);
+    in_is_last     : in    std_logic;
 
     -----------------------------------------------------------------------------
     -- Result of calculation
@@ -90,13 +91,14 @@ begin
       bit_width => bit_width
     )
     port map (
-      clk          => clk,
-      modulus      => modulus,
-      operand_a    => out_reg_r,
-      operand_b    => monpro_b_in,
-      result       => monpro_out,
-      enable       => monpro_enable,
-      output_valid => monpro_output_valid
+      clk            => clk,
+      modulus        => modulus,
+      modulus_length => modulus_length,
+      operand_a      => out_reg_r,
+      operand_b      => monpro_b_in,
+      result         => monpro_out,
+      enable         => monpro_enable,
+      output_valid   => monpro_output_valid
     );
 
   out_reg_in_mux : entity work.mux_3to1(rtl)
