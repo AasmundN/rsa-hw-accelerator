@@ -28,11 +28,10 @@ architecture rtl of monpro_tb is
   signal enable       : std_logic;
   signal output_valid : std_logic;
 
-  signal operand_a      : std_logic_vector(bit_width - 1 downto 0);
-  signal operand_b      : std_logic_vector(bit_width - 1 downto 0);
-  signal modulus        : std_logic_vector(bit_width - 1 downto 0);
-  signal modulus_length : std_logic_vector(bit_width - 1 downto 0);
-  signal result         : std_logic_vector(bit_width - 1 downto 0);
+  signal operand_a : std_logic_vector(bit_width - 1 downto 0);
+  signal operand_b : std_logic_vector(bit_width - 1 downto 0);
+  signal modulus   : std_logic_vector(bit_width - 1 downto 0);
+  signal result    : std_logic_vector(bit_width - 1 downto 0);
 
 begin
 
@@ -43,14 +42,13 @@ begin
       bit_width => bit_width
     )
     port map (
-      clk            => clk,
-      modulus        => modulus,
-      modulus_length => modulus_length,
-      operand_a      => operand_a,
-      operand_b      => operand_b,
-      result         => result,
-      enable         => enable,
-      output_valid   => output_valid
+      clk          => clk,
+      modulus      => modulus,
+      operand_a    => operand_a,
+      operand_b    => operand_b,
+      result       => result,
+      enable       => enable,
+      output_valid => output_valid
     );
 
   test_sequencer : process is
@@ -110,11 +108,10 @@ begin
       wait until falling_edge(clk);
       wait until rising_edge(clk);
 
-      enable         <= '0';
-      operand_a      <= test_a;
-      operand_b      <= test_b;
-      modulus        <= test_n;
-      modulus_length <= bitscanner(test_n);
+      enable    <= '0';
+      operand_a <= test_a;
+      operand_b <= test_b;
+      modulus   <= test_n;
 
       wait until rising_edge(clk);
       enable <= '1';
